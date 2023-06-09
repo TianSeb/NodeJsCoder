@@ -1,0 +1,20 @@
+# dependencies
+node_modules
+*.log
+
+# build output
+dist
+# *.js
+*.d.ts
+*.js.map
+
+# IDE files
+.vscode/
+.idea/
+
+# misc
+.DS_Store
+.env.development
+.env.production
+.env.local
+.env

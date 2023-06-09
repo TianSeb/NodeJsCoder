@@ -1,0 +1,29 @@
+[
+	{
+		"title": "banana",
+		"description": "Este es un producto prueba",
+		"price": 200,
+		"thumbnail": "Sin imagen",
+		"code": "abc123",
+		"stock": 25,
+		"id": "fae44779-3cd6-43a5-9928-51d4a726e4c9"
+	},
+	{
+		"title": "manzana",
+		"description": "Este es un producto prueba",
+		"price": 300,
+		"thumbnail": "Sin imagen",
+		"code": "abc321",
+		"stock": 32,
+		"id": "619d1105-119b-4caf-8b5d-0cf59eb628fe"
+	},
+	{
+		"title": "naranja",
+		"description": "Este es un producto prueba",
+		"price": 400,
+		"thumbnail": "Sin imagen",
+		"code": "abc111",
+		"stock": 12,
+		"id": "81658c43-c291-4471-9380-1e7c414e156a"
+	}
+]

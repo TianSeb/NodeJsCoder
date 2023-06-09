@@ -1,0 +1,32 @@
+[
+    {
+        "title": "banana",
+        "description": "Este es un producto prueba",
+        "code": "abc123",
+        "price": 200,
+        "status": true,
+        "stock": 25,
+        "category": "frutas",
+        "thumbnail": ["Sin imagen"]
+    },
+    {
+        "title": "manzana",
+        "description": "Este es un producto prueba",
+        "code": "abc321",
+        "price": 300,
+        "status": true,
+        "stock": 32,
+        "category": "frutas",
+        "thumbnail": ["Sin imagen"]
+    },
+    {
+        "title": "naranja",
+        "description": "Este es un producto prueba",
+        "code": "abc111",
+        "price": 400,
+        "status": true,
+        "stock": 12,
+        "category": "frutas",
+        "thumbnail": ["Sin imagen"]
+    }
+]

@@ -1,0 +1,39 @@
+name: Test Eccommerce App
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: DEV
+    strategy:
+      matrix:
+        node-version: [17.x]
+    env:
+      NODE_ENV: ${{ secrets.NODE_ENV }}
+      PORT: ${{ secrets.PORT }}
+      DB_URL_MONGO: ${{ secrets.DB_URL_MONGO }}
+      SOCKET_URL: ${{ secrets.SOCKET_URL }}
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Docker image
+        run: docker build -t test-app .
+
+      - name: Run tests in container
+        run: docker run --rm test-app
