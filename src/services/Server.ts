@@ -1,6 +1,7 @@
 import express, { Express } from 'express'
 import http, { createServer } from 'http'
 import routes from '../routes/Routes'
+import cookieParser from 'cookie-parser'
 import errorHandler from '../config/ErrorConfig'
 class Server {
 
@@ -12,8 +13,9 @@ class Server {
         this.app = express()
         this.app.set('view engine', 'ejs')
         this.app.use(express.json())
-        this.app.use(express.urlencoded({ extended: true}))
+        this.app.use(express.urlencoded({ extended: true }))
         this.app.use(express.static('public'))
+        this.app.use(cookieParser())
         this.app.use(routes)
         this.app.use(errorHandler)
         this.httpServer = createServer(this.app)
