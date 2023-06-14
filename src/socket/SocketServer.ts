@@ -1,18 +1,18 @@
 import { Server as ioServer, Socket } from 'socket.io'
 import { Server as httpServer } from 'http'
-import ProductManager from '../services/ProductManager'
-import ChatManager from '../services/ChatManager'
+import ProductService from '../services/ProductService'
+import ChatService from '../services/ChatService'
 
 export class SocketServer {
 
     private io: ioServer = new ioServer
-    private productManager: ProductManager
-    private chatManager: ChatManager
+    private productService: ProductService
+    private chatService: ChatService
 
     constructor(server: any) {
         this.initWsServer(server)
-        this.productManager = ProductManager.getInstance()
-        this.chatManager = ChatManager.getInstance()
+        this.productService = ProductService.getInstance()
+        this.chatService = ChatService.getInstance()
         this.init()
     }
 
@@ -23,20 +23,20 @@ export class SocketServer {
     private init(): void {
         this.io.on('connection', async (socket: Socket) => {
             console.log('New connection received')
-            socket.emit('products', await this.productManager.getProducts(1,10))
-            socket.emit('messages', await this.chatManager.getAllMsgs())
+            socket.emit('products', await this.productService.getProducts(1,10))
+            socket.emit('messages', await this.chatService.getAllMsgs())
 
             socket.on("productSaved", async () => {        
-                this.io.emit("products", await this.productManager.getProducts(1,10))
+                this.io.emit("products", await this.productService.getProducts(1,10))
             })
 
             socket.on("productDeleted", async () => {        
-                this.io.emit("products", await this.productManager.getProducts(1,10))
+                this.io.emit("products", await this.productService.getProducts(1,10))
             })
 
             socket.on("msgSent", async (data:string): Promise<void> => {
-                await this.chatManager.saveMsg(data)
-                this.io.emit("messages", await this.chatManager.getAllMsgs())
+                await this.chatService.saveMsg(data)
+                this.io.emit("messages", await this.chatService.getAllMsgs())
             })
 
             socket.on("disconnect", () => {

@@ -1,10 +1,10 @@
 import express, { Express } from 'express'
 import http, { createServer } from 'http'
-import routes from '../routes/Routes'
+import routes from './routes/Routes'
 import cookieParser from 'cookie-parser'
 import session from 'express-session'
-import config, { sessionStore } from '../config/Config'
-import errorHandler from '../config/ErrorConfig'
+import { sessionStore } from './config/Session'
+import errorHandler from './config/ErrorConfig'
 
 class Server {
 
@@ -17,7 +17,7 @@ class Server {
         this.app.use(express.json())
         this.app.use(express.urlencoded({ extended: true }))
         this.app.use(express.static('public'))
-        this.app.use(cookieParser(config.cookieSecret))
+        // this.app.use(cookieParser(config.cookieSecret))
         this.app.use(session(sessionStore))
         this.app.use(routes)
         this.app.use(errorHandler)

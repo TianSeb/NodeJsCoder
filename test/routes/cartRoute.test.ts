@@ -2,7 +2,7 @@ import request from "supertest"
 import express from "express"
 import cartsRoute from "../../src/routes/Cart.routes"
 import errorHandler from '../../src/config/ErrorConfig'
-import CartManager from "../../src/services/CartManager"
+import CartService from "../../src/services/CartService"
 import { Cart } from "../../src/entities/ICart"
 
 const app = express()
@@ -13,12 +13,12 @@ app.use("/api", cartsRoute)
 app.use(errorHandler)
 
 const cartPath = "/api/carts/"
-const cartManager = CartManager.getInstance()
+const cartService = CartService.getInstance()
 let carts: any
 let cart: Cart
 
 beforeEach(async () => {
-    carts = await cartManager.getCarts()
+    carts = await cartService.getCarts()
     cart = carts[0]
 })
 

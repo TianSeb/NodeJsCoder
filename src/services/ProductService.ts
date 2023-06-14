@@ -6,16 +6,16 @@ import createError from 'http-errors'
 
 const productDao = DaoFactory.getProductDaoInstance()
 
-export default class ProductManager {
-    private static instance: ProductManager | null = null
+export default class ProductService {
+    private static instance: ProductService | null = null
 
     constructor() {}
 
-    static getInstance(): ProductManager {
-        if (!ProductManager.instance) {
-            ProductManager.instance = new ProductManager()
+    static getInstance(): ProductService {
+        if (!ProductService.instance) {
+            ProductService.instance = new ProductService()
         }
-        return ProductManager.instance
+        return ProductService.instance
     }
     
     async addProduct(data: any): Promise<Product> {
@@ -71,5 +71,5 @@ export default class ProductManager {
         } catch (error:any) {
             throw new createError.Conflict(error.message)
         }
-    } 
+    }
 }

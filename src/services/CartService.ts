@@ -2,16 +2,16 @@ import DaoFactory from '../dao/DaoFactory'
 import { Cart } from '../entities/ICart'
 
 const cartDao = DaoFactory.getCartDaoInstance()
-export default class CartManager {
-    private static instance: CartManager | null = null
+export default class CartService {
+    private static instance: CartService | null = null
 
     constructor() {}
 
-    static getInstance(): CartManager {
-        if (!CartManager.instance) {
-            CartManager.instance = new CartManager()
+    static getInstance(): CartService {
+        if (!CartService.instance) {
+            CartService.instance = new CartService()
         }
-        return CartManager.instance
+        return CartService.instance
     }
 
     async createCart(): Promise<Cart> {
