@@ -3,16 +3,16 @@ import { ChatMessage } from '../entities/IChatMessage'
 
 const chatDao = DaoFactory.getChatDaoInstance()
 
-export default class ChatManager {
-    private static instance: ChatManager | null = null
+export default class ChatService {
+    private static instance: ChatService | null = null
 
     constructor() {}
 
-    static getInstance(): ChatManager {
-        if (!ChatManager.instance) {
-            ChatManager.instance = new ChatManager()
+    static getInstance(): ChatService {
+        if (!ChatService.instance) {
+            ChatService.instance = new ChatService()
         }
-        return ChatManager.instance
+        return ChatService.instance
     }
 
     async saveMsg(data:any) : Promise<ChatMessage | Error> {

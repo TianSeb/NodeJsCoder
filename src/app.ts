@@ -1,4 +1,4 @@
-import Server from './services/Server'
+import Server from './Server'
 import { SocketServer } from './socket/SocketServer'
 import mongoose from 'mongoose'
 import config from './config/Config'

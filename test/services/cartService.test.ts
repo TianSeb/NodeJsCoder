@@ -1,11 +1,11 @@
-import CartManager from "../../src/services/CartManager"
+import CartService from "../../src/services/CartService"
 
-const cartManager = CartManager.getInstance()
+const cartService = CartService.getInstance()
 let carts: any
 let cart: any
 
 beforeEach(async () => {
-    carts = await cartManager.getCarts()
+    carts = await cartService.getCarts()
     cart = carts[0]
 })
 
@@ -15,14 +15,14 @@ describe('Test Cart Manager with fs', () => {
     })
 
     it('should return cart when searching cartId', async () => {
-        let cartToCheck = await cartManager.getCart(cart.id)
+        let cartToCheck = await cartService.getCart(cart.id)
         expect(cartToCheck).not.toBeNull
     })
 
     it('should create a new Cart that has product with quantity 2', async () => {
-        await cartManager.saveProductToCart(cart.id, "1234")
-        await cartManager.saveProductToCart(cart.id, "1234")
-        let cartProducts: any = await cartManager.getCart(cart.id)
+        await cartService.saveProductToCart(cart.id, "1234")
+        await cartService.saveProductToCart(cart.id, "1234")
+        let cartProducts: any = await cartService.getCart(cart.id)
 
         expect(cartProducts.products[0].quantity).toEqual(2)
     })

@@ -2,7 +2,7 @@ import request from "supertest"
 import express from "express"
 import productsRoute from "../../src/routes/Product.routes"
 import errorHandler from '../../src/config/ErrorConfig'
-import ProductManager from "../../src/services/ProductManager"
+import ProductService from "../../src/services/ProductService"
 
 const app = express()
 
@@ -12,12 +12,12 @@ app.use("/api", productsRoute)
 app.use(errorHandler)
 
 const productPath = "/api/products/"
-const productManager = ProductManager.getInstance()
+const productService = ProductService.getInstance()
 let response: any
 let product: any
 
 beforeEach(async () => {
-  response = await productManager.getProducts()
+  response = await productService.getProducts()
   product = response.docs[0]
 })
 

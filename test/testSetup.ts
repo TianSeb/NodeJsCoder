@@ -1,24 +1,24 @@
-import ProductManager from '../src/services/ProductManager'
-import CartManager from '../src/services/CartManager'
+import ProductService from '../src/services/ProductService'
+import Cartservice from '../src/services/CartService'
 import fs from 'fs'
 import path from 'path'
 
-const productManager = ProductManager.getInstance()
-const cartManager = CartManager.getInstance()
+const productService = ProductService.getInstance()
+const cartService = Cartservice.getInstance()
 let dbPath = path.resolve(__dirname, "./testPayload.json")
 let database = fs.readFileSync(dbPath, 'utf-8')
 const products = JSON.parse(database)
 
 beforeEach(async () => {
-    await productManager.deleteAll()
-    await cartManager.deleteAll()
-    await productManager.addProduct(products[0])
-    await productManager.addProduct(products[1])
-    await productManager.addProduct(products[2])
-    await cartManager.createCart()
+    await productService.deleteAll()
+    await cartService.deleteAll()
+    await productService.addProduct(products[0])
+    await productService.addProduct(products[1])
+    await productService.addProduct(products[2])
+    await cartService.createCart()
 })
 
 afterEach(async () => { 
-    await productManager.deleteAll()
-    await cartManager.deleteAll()
+    await productService.deleteAll()
+    await cartService.deleteAll()
 })

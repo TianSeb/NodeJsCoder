@@ -1,12 +1,12 @@
-import ProductManager from '../../src/services/ProductManager'
+import ProductService from '../../src/services/ProductService'
 import { Product } from '../../src/entities/IProduct'
 
-const productManager = ProductManager.getInstance()
+const productService = ProductService.getInstance()
 let response: any
 let product: any
 
 beforeEach(async () => {
-    response = await productManager.getProducts()
+    response = await productService.getProducts()
     product = response.docs[0]
 })
 
@@ -22,35 +22,35 @@ describe('Test Product Manager with fs', () => {
     })
 
     it('addProduct returns error when creating product with same code', async () => {
-        await expect(async () => await productManager.addProduct(product))
+        await expect(async () => await productService.addProduct(product))
                         .rejects.toThrowError("Product code is already in use")
     })
 
     it('getProductById returns product with valid id', async () => {
         for (const product of response.docs) {
-            let productTitle: Product = await productManager.getProductById(product.id)
+            let productTitle: Product = await productService.getProductById(product.id)
             expect(productTitle.title).toEqual(product.title)
         }
     })
 
     it('getProductById returns error not found when id does not exist', async () => {
-        await expect(productManager.getProductById("asdggjhk")).rejects
+        await expect(productService.getProductById("asdggjhk")).rejects
             .toThrowError(`Product asdggjhk not found`)
     })
 
     it('deleteById() deletes Product and getAll().length = 2 ', async () => {
-        await productManager.deleteProductById(product.id)
+        await productService.deleteProductById(product.id)
 
         const expected = 2
-        const result: any = await productManager.getProducts()
+        const result: any = await productService.getProducts()
         await expect(result.docs.length).toBe(expected)
     })
 
     it('deleteAll() returns empty array after deleting all products', async () => {
-        await productManager.deleteAll()
+        await productService.deleteAll()
 
         const expected = 0
-        const result: any = await productManager.getProducts()
+        const result: any = await productService.getProducts()
         expect(result.docs.length).toBe(expected)
     })
 
@@ -58,9 +58,9 @@ describe('Test Product Manager with fs', () => {
         let fieldsToUpdate = {
             stock: 5
         }
-        await productManager.updateProductById(product.id, fieldsToUpdate)
+        await productService.updateProductById(product.id, fieldsToUpdate)
 
-        let productUpdated: any = await productManager.getProductById(product.id)
+        let productUpdated: any = await productService.getProductById(product.id)
 
         await expect(productUpdated.stock).toEqual(5)
     })
@@ -72,7 +72,7 @@ describe('Test Product Manager with fs', () => {
 
         let prodId = product.id
 
-        await expect(productManager.updateProductById(prodId, fieldsToUpdate))
+        await expect(productService.updateProductById(prodId, fieldsToUpdate))
             .rejects
             .toThrowError('Invalid field: id')
     })
@@ -82,7 +82,7 @@ describe('Test Product Manager with fs', () => {
             stock: 5
         }
 
-        await expect(productManager.updateProductById("5555", fieldsToUpdate))
+        await expect(productService.updateProductById("5555", fieldsToUpdate))
             .rejects
             .toThrowError('Product with id 5555 not found')
     })

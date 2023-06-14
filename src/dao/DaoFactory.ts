@@ -6,12 +6,15 @@ import CartFsDao from "./fs/CartFsDao"
 import CartMongoDao from "./mongo/CartMongoDao"
 import { ChatDao } from "./interfaces/ChatDao"
 import ChatMongoDao from "./mongo/ChatMongoDao"
+import { UserDao } from "./interfaces/UserDao"
+import UserMongoDao from "./mongo/UserMongoDao"
 import config from "../config/Config"
 
 export default class DaoFactory {
     private static productInstance: ProductDao
     private static cartInstance: CartDao
     private static chatInstance: ChatDao
+    private static userInstance: UserDao
 
     private constructor() {
     }
@@ -43,5 +46,12 @@ export default class DaoFactory {
             DaoFactory.chatInstance = new ChatMongoDao()
         }
         return DaoFactory.chatInstance
+    }
+
+    static getUserDaoInstance(): UserDao {
+        if (!DaoFactory.userInstance) {
+            DaoFactory.userInstance = new UserMongoDao()
+        }
+        return DaoFactory.userInstance
     }
 }
