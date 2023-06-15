@@ -11,17 +11,12 @@ export default class UserMongoDao extends MongoDao<User> implements UserDao {
     }
 
     async createUser(user: User): Promise<User> {
-        const { email, password } = user
+        const { email } = user
         const userExist = await UserModel.find({ email })
 
         if (userExist.length !== 0) throw new createError
                                             .BadRequest(`User with email ${email} already exists`)
-
-        if (this.isAdmin(email, password)) {
-            return await super.create({ ...user, role: 'admin'})
-        } else {
-            return super.create(user)
-        }
+        return userExist[0]
     }
 
     async loginUser(user: User): Promise<User> {
@@ -32,10 +27,5 @@ export default class UserMongoDao extends MongoDao<User> implements UserDao {
                                             .Forbidden(`Wrong username or password`)
 
         return userExist[0]
-    }
-
-    private isAdmin(email:string, password:string): boolean {
-        return email === 'adminCoder@coder.com' && 
-               password === 'adminCoder123'
     }
 }

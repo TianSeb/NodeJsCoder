@@ -1,6 +1,6 @@
 import DaoFactory from '../dao/DaoFactory'
 import { User } from '../entities/IUser'
-import { UserModel } from '../dao/mongo/models/User'
+import { createHash, isValidPassword } from '../utils/Utils'
 
 const userDao = DaoFactory.getUserDaoInstance()
 
@@ -16,20 +16,29 @@ export default class UserService {
         }
         return UserService.instance
     }
-    async createUser(data: any): Promise<User> {
-        const user: User = new UserModel({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            password: data.password,
-            age: data.age,
-            role: data.role
-        })
-        
-        return await userDao.createUser(user)
+
+    async createUser(user: User): Promise<User> {
+        const { email, password } = user
+        if (this.isAdmin(email, password)) {
+            return await userDao.createUser({ 
+                ...user, 
+                password: createHash(password),
+                role: 'admin'
+                })
+        } else {
+            return userDao.createUser({
+                ...user,
+                password: createHash(password)
+            })
+        }
     }
 
     async loginUser(data: any): Promise<User> {
         return await userDao.loginUser(data)
+    }
+
+    private isAdmin(email:string, password:string): boolean {
+        return email === 'adminCoder@coder.com' && 
+               password === 'adminCoder123'
     }
 }
