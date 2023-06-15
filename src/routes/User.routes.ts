@@ -7,8 +7,9 @@ const usersRoute = Router()
 
 usersRoute.post('/register', asyncHandler(async (req: Request, res: Response, next: NextFunction): 
 Promise<any> => {
-    return res.json({
-        data: await userService.createUser(req.body)
+    const { password, ...newUser} = await userService.createUser(req.body)
+    return res.status(201).json({
+        data: newUser
     })
 }))
 
@@ -22,7 +23,7 @@ Promise<any> => {
         role : user.role,
     }
 
-    return res.status(201).json({
+    return res.status(200).json({
         data: `Bienvenido ${user.firstName}`
     })
 }))

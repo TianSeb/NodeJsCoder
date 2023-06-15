@@ -3,6 +3,7 @@ import MongoDao from "./MongoDao"
 import { UserModel } from "./models/User"
 import { User } from "../../entities/IUser"
 import { UserDao } from "../interfaces/UserDao"
+import { isValidPassword } from '../../utils/Utils'
 
 export default class UserMongoDao extends MongoDao<User> implements UserDao {
 
@@ -12,20 +13,22 @@ export default class UserMongoDao extends MongoDao<User> implements UserDao {
 
     async createUser(user: User): Promise<User> {
         const { email } = user
-        const userExist = await UserModel.find({ email })
-
-        if (userExist.length !== 0) throw new createError
+        const userExist = await UserModel.findOne({ email })
+        
+        if (userExist) throw new createError
                                             .BadRequest(`User with email ${email} already exists`)
-        return userExist[0]
+        const newUser = await super.create(user)
+        return newUser
     }
 
     async loginUser(user: User): Promise<User> {
         const { email, password } = user
-        const userExist = await UserModel.find({ email, password })
+        const userExist = await UserModel.findOne({ email })
+        const checkPassword = isValidPassword(password, userExist)
 
-        if (userExist.length === 0) throw new createError
+        if (!userExist || !checkPassword) throw new createError
                                             .Forbidden(`Wrong username or password`)
 
-        return userExist[0]
+        return userExist
     }
 }

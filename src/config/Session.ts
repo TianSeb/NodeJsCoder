@@ -27,9 +27,6 @@ if (!isTestEnvironment) {
   mongoStoreOptions = {
     store: new MongoStore({
       mongoUrl: config.mongoDatabaseUrl,
-      crypto: {
-        secret: config.cookieSecret
-      },
       autoRemove: 'interval',
       autoRemoveInterval: 1 //minute
     }),
