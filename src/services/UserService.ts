@@ -8,7 +8,7 @@ export default class UserService {
 
     private static instance: UserService | null = null
 
-    constructor() {}
+    constructor() { }
 
     static getInstance(): UserService {
         if (!UserService.instance) {
@@ -20,13 +20,13 @@ export default class UserService {
     async createUser(user: User): Promise<Partial<User>> {
         const { email, password } = user
         if (this.isAdmin(email, password)) {
-            return await userDao.createUser({ 
-                ...user, 
+            return await userDao.createUser({
+                ...user,
                 password: createHash(password),
                 role: 'admin'
-                })
-        } 
-        return userDao.createUser({
+            })
+        }
+        return await userDao.createUser({
             ...user,
             password: createHash(password)
         })
@@ -36,8 +36,12 @@ export default class UserService {
         return await userDao.loginUser(data)
     }
 
-    private isAdmin(email:string, password:string): boolean {
-        return email === 'adminCoder@coder.com' && 
-               password === 'adminCoder123'
+    async findUser(filter: any): Promise<User | null> {
+        return await userDao.findUser(filter)
+    }
+
+    private isAdmin(email: string, password: string): boolean {
+        return email === 'adminCoder@coder.com' &&
+            password === 'adminCoder123'
     }
 }

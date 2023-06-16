@@ -12,7 +12,7 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
             msg: err.message
         })
     }
+    next()
 }
 
 export default errorHandler
-
