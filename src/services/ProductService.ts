@@ -69,7 +69,7 @@ export default class ProductService {
     
             return product
         } catch (error:any) {
-            throw new createError.Conflict(error.message)
+            throw new createError.NotFound(error.message)
         }
     }
 }

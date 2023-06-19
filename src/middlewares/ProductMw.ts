@@ -12,12 +12,11 @@ export const pipelineParams = async (req: CustomProductRequest, res: Response, n
     const { page, limit, category, status, sort } = req.query
     const parsedPage = parseInt(page as string) || 1
     const parsedLimit = parseInt(limit as string) || 10
-    const options = { parsedPage, parsedLimit }
-
+    const options = { page: parsedPage, limit: parsedLimit }
     const pipeline = await buildProductQueryPipeline(category, status, sort)
     req.pipeline = pipeline
     req.options = options
-
+    
     next()
   } catch (error) {
     return next(createError(501, `error en los componentes para generar el pipeline: ${error}`))
@@ -36,3 +35,4 @@ export const validateSchema = (schema: any) => (req: any, res: Response, next: N
     return next(createError(400, errorMessage))
   }
 }
+

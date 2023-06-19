@@ -29,8 +29,8 @@ export default class ProductFsDao extends FsDao<Product> implements ProductDao {
     async getProducts(pipeline?:any, options?:any) {
         let parsedPage, parsedLimit
         if (options) {
-        parsedPage = options.parsedPage || 1
-        parsedLimit = options.parsedLimit || 10
+        parsedPage = options.page || 1
+        parsedLimit = options.limit || 10
         }
 
         let products = await super.getDatabase()
