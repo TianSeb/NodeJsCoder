@@ -11,7 +11,6 @@ const cookiesConfig: any = {
   secret: config.cookieSecret,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 180000 }
 }
 
 const fileStoreOptions = {
@@ -27,8 +26,7 @@ if (!isTestEnvironment) {
   mongoStoreOptions = {
     store: new MongoStore({
       mongoUrl: config.mongoDatabaseUrl,
-      autoRemove: 'interval',
-      autoRemoveInterval: 3
+      ttl: 60
     }),
     ...cookiesConfig
   }
