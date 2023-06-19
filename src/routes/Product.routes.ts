@@ -4,7 +4,7 @@ import config from "../config/Config"
 import ProductService from "../services/ProductService"
 import { ProductSchemaValidator } from "../dao/mongo/models/Product"
 import { pipelineParams, CustomProductRequest } from "../middlewares/ProductMw"
-import { validateSchema } from "../middlewares/GenericMw"
+import { validateSchema } from "../middlewares/ProductMw"
 
 const productService = ProductService.getInstance()
 const productsRoute = Router()

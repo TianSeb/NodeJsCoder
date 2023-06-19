@@ -23,3 +23,16 @@ export const pipelineParams = async (req: CustomProductRequest, res: Response, n
     return next(createError(501, `error en los componentes para generar el pipeline: ${error}`))
   }
 }
+
+export const validateSchema = (schema: any) => (req: any, res: Response, next: NextFunction): void => {
+  try {
+    schema.parse({
+      body: req.body
+    })
+    next()
+  } catch (err: any) {
+    const missingFields = err.issues.map((issue: any) => issue.path.join('.'))
+    const errorMessage = `Missing required fields: ${missingFields.join(', ')}`
+    return next(createError(400, errorMessage))
+  }
+}

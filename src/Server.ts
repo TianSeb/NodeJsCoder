@@ -7,7 +7,9 @@ import cookieParser from 'cookie-parser'
 import { sessionStore } from './config/Session'
 import config from './config/Config'
 import errorHandler from './config/ErrorConfig'
-import { initializePassport } from './config/passport/Strategies'
+import { initializeGitPassport } from './config/passport/Github'
+import { initializeLocalPassport } from './config/passport/LocalStrategy'
+// import { initializeGooglePassport } from './config/passport/Google'
 
 class Server {
 
@@ -22,13 +24,15 @@ class Server {
         this.app.use(express.static('public'))
         this.app.use(cookieParser(config.cookieSecret))
         this.app.use(session(sessionStore))
-        initializePassport()
         this.app.use(passport.initialize())
         this.app.use(passport.session())
+        // initializeGooglePassport()
+        initializeLocalPassport()
+        initializeGitPassport()
         this.app.use(routes)
         this.app.use(errorHandler)
         this.httpServer = createServer(this.app)
-        this.port = process.env.PORT || "8080"
+        this.port = process.env.PORT || "8001"
     }
 
     start() {

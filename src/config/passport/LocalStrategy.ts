@@ -15,17 +15,16 @@ const strategyOptions: any = {
 const signup: any = async (req: Request, email: string, password: string, done: any) => {
     try {
         const newUser = await userService.createUser(req.body)
-        return done(null, newUser)
+        done(null, newUser)
     } catch (error) {
         done(error)
     }
 }
 
 const login: any = async (req: Request, email: string, password: string, done: any) => {
-    const user = { email, password }
     try {
         const userLogin = await userService.loginUser({ email, password })
-        return done(null, userLogin)
+        done(null, userLogin)
     } catch (error) {
         done(error)
     }
@@ -41,10 +40,10 @@ passport.serializeUser((user: Partial<User>, done: any) => {
 
 passport.deserializeUser(async (req:any, id: string, done: any) => {
     const user = await userService.findUser({ _id: id })
-    return done(null, user)
+    done(null, user)
 })
 
-export const initializePassport = () => {
+export const initializeLocalPassport = () => {
     passport.use('register', signupStrategy)
     passport.use('login', loginStrategy)
 }

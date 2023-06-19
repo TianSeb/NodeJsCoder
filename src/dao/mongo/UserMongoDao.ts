@@ -24,9 +24,9 @@ export default class UserMongoDao extends MongoDao<User> implements UserDao {
     async loginUser(user: User): Promise<User> {
         const { email, password } = user
         const userExist = await UserModel.findOne({ email })
-
         if (!userExist) throw new createError.Forbidden(`Wrong username or password`)
-        isValidPassword(password, userExist)
+        const checkPassword = isValidPassword(password, userExist)
+        if (!checkPassword) throw new createError.Forbidden(`Wrong username or password`)
         return userExist
     }
 
