@@ -7,7 +7,7 @@
     "dev": "cross-env NODE_ENV=development ts-node-dev --respawn src/app.ts",
     "start": "cross-env NODE_ENV=production node dist/app.js",
     "tsc": "tsc",
-    "test": "cross-env NODE_ENV=test jest --runInBand --no-cache --detectOpenHandles --forceExit --testTimeout=5000"
+    "test": "cross-env NODE_ENV=development jest --runInBand --no-cache --detectOpenHandles --forceExit --testTimeout=5000"
   },
   "repository": {
     "type": "git",

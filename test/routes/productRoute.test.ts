@@ -1,137 +1,120 @@
-import request from "supertest"
-import express from "express"
-import productsRoute from "../../src/routes/Product.routes"
-import errorHandler from '../../src/config/ErrorConfig'
-import ProductService from "../../src/services/ProductService"
+import ProductService from '../../src/services/ProductService'
+import ProductController from "../../src/controllers/ProductController"
+import createError from 'http-errors'
+import { CustomProductRequest } from '../../src/middlewares/ProductMw'
+import { pipelineParams } from '../../src/middlewares/ProductMw'
 
-const app = express()
-
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-app.use("/api", productsRoute)
-app.use(errorHandler)
-
-const productPath = "/api/products/"
+/** SET UP **/
 const productService = ProductService.getInstance()
-let response: any
-let product: any
+const productController = new ProductController()
+let req: Partial<CustomProductRequest>
+let res: any
+let next: jest.Mock<any, any>
+const mockBuildProductQueryPipeline = jest.spyOn(productService, 'buildProductQueryPipeline')
+const mockGetProducts = jest.spyOn(productService, 'getProducts')
+const expectedPipeline = [
+    {
+        $match: {
+            category: 'Fruits',
+        },
+    },
+    {
+        $match: {
+            status: true,
+        },
+    },
+    {
+        $sort: {
+            price: 1,
+        },
+    },
+]
+const expectedOptions = {
+    page: 1,
+    limit: 10,
+}
+const mockProducts = [
+    { id: 1, name: 'Product 1' },
+    { id: 2, name: 'Product 2' },
+    { id: 3, name: 'Product 3' },
+]
 
-beforeEach(async () => {
-  response = await productService.getProducts()
-  product = response.docs[0]
+beforeEach(() => {
+    req = {
+        query: {
+            page: '1',
+            limit: '10',
+            category: 'Fruits',
+            status: 'true',
+            sort: '1',
+        },
+    }
+    res = {
+        statusCode: 200,
+        body: null,
+        json: jest.fn().mockImplementation((data) => {
+            res.body = data
+        }),
+    }
+    next = jest.fn()
 })
 
-test("get products returns product array with length 3", done => {
-  request(app)
-    .get(productPath)
-    .query({ page: 1, limit: 3 })
-    .expect("Content-Type", /json/)
-    .expect(200)
-    .then((res: any) => {
-      expect(res.body.data).toHaveLength(3)
-      done()
-    })
+afterEach(() => {
+    jest.clearAllMocks()
 })
 
-test("get products with limit 2 returns product array with length 2", done => {
-  request(app)
-    .get(productPath)
-    .query({ page: 1, limit: 2 })
-    .expect("Content-Type", /json/)
-    .expect(200)
-    .then((res: any) => {
-      expect(res.body.data).toHaveLength(2)
-      done()
-    })
-})
+describe('pipelineParams middleware', () => {
+    it('should set pipeline and options on request object and call next', async () => {
+        mockBuildProductQueryPipeline.mockReturnValueOnce(expectedPipeline)
+        await pipelineParams(req as CustomProductRequest, res, next)
 
-test("get Product By Id returns Product", done => {
-  request(app)
-    .get(productPath + product.id)
-    .expect("Content-Type", /json/)
-    .expect(200)
-    .then((res: any) => {
-      expect(res.body.data.title).toEqual(product.title)
-      done()
+        expect(req.pipeline).toEqual(expectedPipeline)
+        expect(req.options).toEqual(expectedOptions)
+        expect(next).toHaveBeenCalledTimes(1)
+        expect(next).toHaveBeenCalledWith()
     })
-})
 
-test("get Product By Id returns empty", done => {
-  request(app)
-    .get(productPath + "empty")
-    .expect("Content-Type", /json/)
-    .expect(400)
-    .then((res: any) => {
-      expect(res.body.data).toBeUndefined()
-      done()
-    })
-})
+    it('should call next with error if an exception occurs', async () => {
+        const errorMessage = 'Test error'
+        mockBuildProductQueryPipeline.mockImplementationOnce(() => {
+            throw new Error(errorMessage)
+        })
+        await pipelineParams(req as CustomProductRequest, res, next)
 
-test("post product payload creates new product and returns 201", done => {
-  request(app)
-    .post(productPath)
-    .send({
-      "title": "Manzana",
-      "description": "Este es un producto prueba",
-      "code": "abc1234",
-      "price": 200,
-      "status": true,
-      "stock": 25,
-      "category": "frutas",
-      "thumbnail": ["Sin imagen"]
-    })
-    .expect(201)
-    .end((err, res) => {
-      if (err) {
-        done(`Request failed with status code ${res.statusCode}. Response body: ${JSON.stringify(res.body)}`)
-      } else {
-        done()
-      }
-    })
-})
-
-test("post product with no code field returns bad request error", done => {
-  request(app)
-    .post(productPath)
-    .send({
-      "title": "mayonesa",
-      "description": "postTest",
-      "price": 80,
-      "stock": 10
-    })
-    .expect(400, done)
-})
-
-test("updating product stock returns 200", done => {
-  request(app)
-    .put(productPath + product.id)
-    .send({
-      "stock": 1110
-    })
-    .expect(200)
-    .end(async (err: any, res: any) => {
-      if (err) return done(err)
-
-      const updatedProductRes = await request(app).get(productPath + product.id)
-      const updatedProduct = updatedProductRes.body.data
-
-      expect(updatedProduct.stock).toBe(1110)
-      done()
+        expect(next).toHaveBeenCalledTimes(1)
+        expect(next).toHaveBeenCalledWith(createError(501, `Something went wrong when building the pipeline params: Error: ${errorMessage}`))
     })
 })
 
-test('deleting product returns 200 and product is removed from db', done => {
-  request(app)
-    .delete(productPath + product.id)
-    .expect(200)
-    .end(async (err: any, res: any) => {
-      if (err) return done(err)
+describe('Get Products Route', () => {
+    it('should return products response with proper links', async () => {
+        mockBuildProductQueryPipeline.mockReturnValueOnce(expectedPipeline)
+        mockGetProducts.mockResolvedValueOnce({
+            docs: mockProducts,
+            page: 1,
+            totalPages: 3,
+            hasNextPage: true,
+            hasPrevPage: false,
+            nextPage: 2,
+            prevPage: null,
+        })
+        await pipelineParams(req as CustomProductRequest, res, next)
+        await productController.getProducts(req as CustomProductRequest, res, next)
 
-      const updatedProductDb = await request(app).get(productPath)
-      const dbLength = updatedProductDb.body.data.length
-
-      expect(dbLength).toBe(2)
-      done()
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toEqual({
+            status: 200,
+            data: mockProducts,
+            info: {
+                page: 1,
+                totalPages: 3,
+                nextPage: 'http://localhost:8001/products?page=2',
+                prevPage: null,
+                hasNextPage: true,
+                hasPrevPage: false,
+            },
+        })
+        expect(mockBuildProductQueryPipeline).toHaveBeenCalledWith('Fruits', "true", '1')
+        expect(mockGetProducts).toHaveBeenCalledWith(expectedPipeline, expectedOptions)
     })
 })
-
