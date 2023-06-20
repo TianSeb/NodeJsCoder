@@ -1,10 +1,15 @@
 import express, { Express } from 'express'
 import http, { createServer } from 'http'
 import routes from './routes/Routes'
-import cookieParser from 'cookie-parser'
+import passport from "passport"
 import session from 'express-session'
+import cookieParser from 'cookie-parser'
 import { sessionStore } from './config/Session'
+import config from './config/Config'
 import errorHandler from './config/ErrorConfig'
+import { initializeGitPassport } from './config/passport/Github'
+import { initializeLocalPassport } from './config/passport/LocalStrategy'
+// import { initializeGooglePassport } from './config/passport/Google'
 
 class Server {
 
@@ -17,12 +22,17 @@ class Server {
         this.app.use(express.json())
         this.app.use(express.urlencoded({ extended: true }))
         this.app.use(express.static('public'))
-        // this.app.use(cookieParser(config.cookieSecret))
+        this.app.use(cookieParser(config.cookieSecret))
         this.app.use(session(sessionStore))
+        this.app.use(passport.initialize())
+        this.app.use(passport.session())
+        // initializeGooglePassport()
+        initializeLocalPassport()
+        initializeGitPassport()
         this.app.use(routes)
         this.app.use(errorHandler)
         this.httpServer = createServer(this.app)
-        this.port = process.env.PORT || "8080"
+        this.port = process.env.PORT || "8001"
     }
 
     start() {

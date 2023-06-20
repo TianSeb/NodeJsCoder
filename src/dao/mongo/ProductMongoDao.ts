@@ -17,6 +17,12 @@ export default class ProductMongoDao extends MongoDao<Product> implements Produc
 
     async getProducts(pipeline?:any, options?:any): Promise<PaginateResult<Product> | any> {
         let agregattion: Aggregate<any[]> = ProductModel.aggregate(pipeline)
+
+        const totalPageCount = await this.getProductTotalPageCount(pipeline, options.limit)
+        if (options.page > totalPageCount) {
+          throw new createError.NotFound('Page not found')
+        }
+     
         let result = await ProductModel.aggregatePaginate(agregattion, options)
         return result
     }
@@ -41,5 +47,11 @@ export default class ProductMongoDao extends MongoDao<Product> implements Produc
             throw new createError.NotFound(`Product with id ${prodId} not found`)
         }
         return product
+    }
+
+    private getProductTotalPageCount = async (pipeline: any, limit: number): Promise<number> => {
+        const totalProductCount = await ProductModel.countDocuments(pipeline)
+        const totalPages = Math.ceil(totalProductCount / limit)
+        return totalPages
     }
 }
