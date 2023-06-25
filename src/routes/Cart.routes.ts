@@ -1,62 +1,18 @@
-import { Router, Request, Response, NextFunction } from "express"
-import CartService from "../services/CartService"
+import { Router } from "express"
+import CartController from "../controllers/CartController"
 import asyncHandler from 'express-async-handler'
 
-const cartService = CartService.getInstance()
+const cartController = new CartController()
 const cartsRoute = Router()
 
-cartsRoute.get('/carts',asyncHandler(async (req:Request, res:Response, next:NextFunction):Promise<any> => {
-    return res.status(200).json({
-        data: await cartService.getCarts()
-    })
-}))
-
-cartsRoute.get('/carts/:cid',asyncHandler(async (req:Request, res:Response, next:NextFunction):Promise<any> => {
-    return res.status(200).json({
-        data: await cartService.getCart(req.params.cid)
-    })
-}))
-
-cartsRoute.put('/carts/:cid',asyncHandler(async (req:Request, res:Response, next:NextFunction):Promise<any> => {
-    return res.status(200).json({
-        data: await cartService.updateCart(req.params.cid, req.body) 
-    })
-}))
-
-cartsRoute.put('/carts/:cid/product/:pid',asyncHandler(async (req:Request, res:Response, next:NextFunction):Promise<any> => {
-    return res.status(200).json({
-        data: await cartService.updateProductInCart(req.params.cid, req.params.pid, req.body) 
-    })
-}))
-
-cartsRoute.post('/carts',asyncHandler(async (req:Request, res:Response, next:NextFunction):Promise<any> => {
-    return res.status(200).json({
-        data: await cartService.createCart()
-    })
-}))
-
-cartsRoute.post('/carts/:cid/product/:pid',asyncHandler(async (req:Request, res:Response, next:NextFunction):Promise<any> => {
-    return res.status(200).json({
-        data: await cartService.saveProductToCart(req.params.cid, req.params.pid)
-    })
-}))
-
-cartsRoute.delete('/carts/:cid',asyncHandler(async (req:Request, res:Response, next:NextFunction):Promise<any> => {
-    return res.status(200).json({
-        data: await cartService.deleteCartById(req.params.cid)
-    })
-}))
-
-cartsRoute.delete('/carts',asyncHandler(async (req:Request, res:Response, next:NextFunction):Promise<any> => {
-    return res.status(200).json({
-        data: await cartService.deleteAll()
-    })
-}))
-
-cartsRoute.delete('/carts/:cid/product/:pid',asyncHandler(async (req:Request, res:Response, next:NextFunction):Promise<any> => {
-    return res.status(200).json({
-        data: await cartService.deleteProductInCart(req.params.cid, req.params.pid)
-    })
-}))
+cartsRoute.get('/carts',asyncHandler(cartController.getCarts))
+cartsRoute.get('/carts/:cid',asyncHandler(cartController.getCart))
+cartsRoute.put('/carts/:cid',asyncHandler(cartController.updateCart))
+cartsRoute.put('/carts/:cid/product/:pid',asyncHandler(cartController.updateProductInCart))
+cartsRoute.post('/carts',asyncHandler(cartController.createCart))
+cartsRoute.post('/carts/:cid/product/:pid',asyncHandler(cartController.saveProductToCart))
+cartsRoute.delete('/carts/:cid',asyncHandler(cartController.deleteCartById))
+cartsRoute.delete('/carts',asyncHandler(cartController.deleteAll))
+cartsRoute.delete('/carts/:cid/product/:pid',asyncHandler(cartController.deleteProductInCart))
 
 export default cartsRoute

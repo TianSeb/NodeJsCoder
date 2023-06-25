@@ -1,57 +1,22 @@
-import { Router, Request, Response, NextFunction } from "express"
+import { Router } from "express"
 import passport from "passport"
 import asyncHandler from 'express-async-handler'
+import UserController from "../controllers/UserController"
 // import { generateToken, checkAuth } from "../config/jwt/JwtAuth"
 // import UserService from "../services/UserService"
 // const userService = UserService.getInstance()
 
 const usersRoute = Router()
+const userController = new UserController()
 
-usersRoute.post('/register', passport.authenticate('register'), asyncHandler(async (req: any, res: Response,
-    next: NextFunction): Promise<any> => {
-    return res.status(201).json({
-        msg: `User ${req.user.email} created`
-    })
-}))
-
-usersRoute.post('/login', passport.authenticate('login'), asyncHandler(async (req: any, res: Response,
-    next: NextFunction): Promise<any> => {
-    return res.status(200).json({
-        data: `Bienvenido ${req.user.firstName}`
-    })
-}))
-
-usersRoute.post('/logout', asyncHandler(async (req: Request, res: any, next: NextFunction): Promise<any> => {
-    req.logOut((err: any) => {
-        if (err) res.send({ status: 'Logout ERROR', body: err })
-        res.send('Logout ok!')
-    })
-}))
-
-usersRoute.get('/session', asyncHandler(async (req: Request, res: any, next: NextFunction): Promise<any> => {
-    return res.status(201).json({
-        session: req.session
-    })
-}))
-
+usersRoute.post('/register', passport.authenticate('register'), asyncHandler(userController.register))
+usersRoute.post('/login', passport.authenticate('login'), asyncHandler(userController.login))
+usersRoute.post('/logout', asyncHandler(userController.logout))
+usersRoute.get('/session', asyncHandler(userController.createSession))
 usersRoute.get('/register-github', passport.authenticate('github', { scope: ['user:email'] }))
+usersRoute.get('/profile-github', passport.authenticate('github', { scope: ['user:email'] }),asyncHandler(userController.profileGithub))
 
-usersRoute.get('/profile-github', passport.authenticate('github', { scope: ['user:email'] }),
-    asyncHandler(async (req: any, res: Response, next: NextFunction): Promise<any> => {
-        // const { firstName, lastName, email, role, isGithub } = req.user
-        res.redirect('/')
-        // return res.json({
-        //     msg: 'Github Login OK',
-        //     session: req.session,
-        //     data: {
-        //         firstName,
-        //         lastName,
-        //         email,
-        //         role,
-        //         isGithub
-        //     }
-        // })
-    }))
+export default usersRoute
 
 //JWT
 // usersRoute.post('/register-jwt', asyncHandler(async (req: any, res: Response, next: NextFunction): Promise<any> => {
@@ -104,5 +69,3 @@ usersRoute.get('/profile-github', passport.authenticate('github', { scope: ['use
 //             session: req.session
 //         })
 //     }))
-
-export default usersRoute

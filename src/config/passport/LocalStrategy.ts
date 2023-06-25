@@ -12,7 +12,7 @@ const strategyOptions: any = {
     passReqToCallback: true,
 }
 
-const signup: any = async (req: Request, email: string, password: string, done: any) => {
+const signup: any = async (req: Request, email: string, password: string, done: any): Promise<User | any> => {
     try {
         const newUser = await userService.createUser(req.body)
         done(null, newUser)
@@ -21,7 +21,7 @@ const signup: any = async (req: Request, email: string, password: string, done: 
     }
 }
 
-const login: any = async (req: Request, email: string, password: string, done: any) => {
+const login: any = async (req: Request, email: string, password: string, done: any): Promise<User | any> => {
     try {
         const userLogin = await userService.loginUser({ email, password })
         done(null, userLogin)

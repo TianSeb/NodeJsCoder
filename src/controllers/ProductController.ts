@@ -1,9 +1,7 @@
-import { Router, Request, Response, NextFunction } from "express"
+import { Request, Response, NextFunction } from "express"
 import config from "../config/Config"
 import ProductService from "../services/ProductService"
-import { ProductSchemaValidator } from "../dao/mongo/models/Product"
-import { pipelineParams, CustomProductRequest } from "../middlewares/ProductMw"
-import { validateSchema } from "../middlewares/ProductMw"
+import { CustomProductRequest } from "../middlewares/ProductMw"
 
 const productService = ProductService.getInstance()
 
@@ -35,5 +33,27 @@ export default class ProductController {
         })
     }
 
-    
+    async addProduct(req: Request, res: Response, next: NextFunction): Promise<any> {
+        return res.status(201).json({
+            data: await productService.addProduct(req.body)
+        })
+    }
+
+    async deleteProductById(req: Request, res: Response, next: NextFunction): Promise<any> {
+        return res.status(200).json({
+            data: await productService.deleteProductById(req.params.pid)
+        })
+    }
+
+    async updateProductById(req: Request, res: Response, next: NextFunction): Promise<any> {
+        return res.status(200).json({
+            data: await productService.updateProductById(req.params.pid, req.body)
+        })
+    }
+
+    async deleteAll(req: Request, res: Response, next: NextFunction): Promise<any> {
+        return res.status(200).json({
+            data: await productService.deleteAll()
+        })
+    }
 }
