@@ -13,6 +13,7 @@ const config = {
   mongoDatabaseUrl: process.env.DB_MONGO_URL,
   socketUrl: process.env.SOCKET_URL,
   cookieSecret: process.env.COOKIE_SECRET || "12345789",
+  jwtSecret: process.env.JWT_SECRET || "1234",
   gitClientId: process.env.GIT_CLIENT_ID,
   gitClientSecret: process.env.GIT_SECRET,
   gitCallbackUrl: process.env.GIT_CALLBACK,

@@ -9,6 +9,7 @@ import config from './config/Config'
 import errorHandler from './config/ErrorConfig'
 import { initializeGitPassport } from './config/passport/Github'
 import { initializeLocalPassport } from './config/passport/LocalStrategy'
+import { initializeJwtPassport } from './config/passport/Jwt'
 // import { initializeGooglePassport } from './config/passport/Google'
 
 class Server {
@@ -16,6 +17,7 @@ class Server {
     private app: Express
     private httpServer: http.Server
     private port: string
+    
     constructor() {
         this.app = express()
         this.app.set('view engine', 'ejs')
@@ -27,6 +29,7 @@ class Server {
         this.app.use(passport.initialize())
         this.app.use(passport.session())
         // initializeGooglePassport()
+        initializeJwtPassport()
         initializeLocalPassport()
         initializeGitPassport()
         this.app.use(routes)

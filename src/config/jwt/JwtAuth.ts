@@ -1,12 +1,13 @@
 import { Request, Response, NextFunction } from "express"
 import createError from 'http-errors'
 import jwt from "jsonwebtoken"
+import config from "../Config"
 import { User } from "../../entities/IUser"
 import UserService from "../../services/UserService"
 
 const userService = UserService.getInstance()
 
-const PRIVATE_KEY = '1234'
+const PRIVATE_KEY = config.jwtSecret
 
 export const generateToken = (user: Partial<User>) => {
     const payload = {
@@ -24,16 +25,15 @@ export const generateToken = (user: Partial<User>) => {
     return token
 }
 
-
 export const checkJwtAuth = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const token: any = req.headers['auth_token']
         if (!token) return res.status(401).json({ msg: 'Unauthorized' })
         const decode: any = jwt.verify(token, PRIVATE_KEY)
-        const user = userService.findUser({ _id: decode.userId })
+        const user = await userService.findUser({ _id: decode.userId })
         if (!user) return res.status(401).json({ msg: 'Unauthorized' })
-    
         req.user = user
+        
         return next()
     } catch (error: any) {
         const newError = new createError.Forbidden(`${error}`)
