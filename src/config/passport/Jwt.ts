@@ -1,12 +1,13 @@
 import passport from "passport"
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt'
 import UserService from "../../services/UserService"
+import config from "../Config"
 
 const userService = UserService.getInstance()
 
 const strategyOptions: any = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: '1234'
+    secretOrKey: config.jwtSecret
 }
 
 const verifyToken: any = async (jwt_payload:any, done:any): Promise<any> => {
@@ -15,20 +16,6 @@ const verifyToken: any = async (jwt_payload:any, done:any): Promise<any> => {
     if (!user) return done(null, false)
     return done(null, jwt_payload)
 }
-
-/* ---------- */
-// extract token from cookies
-const cookieExtractor: any = (req:any) => {
-    const token = req.cookies.token
-    return token
-}
-
-const strategyOptionsCookies: any = {
-    jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
-    secretOrKey: '1234'
-}
-
-/* ---------- */
 
 passport.serializeUser((user: any, done: any) => {
     console.log('user--->', user)
@@ -42,5 +29,4 @@ passport.deserializeUser(async (req:any, id: string, done: any) => {
 
 export const initializeJwtPassport = () => {
     passport.use('jwt', new JwtStrategy(strategyOptions, verifyToken))
-    passport.use('jwtCookies', new JwtStrategy(strategyOptionsCookies, verifyToken))
 }

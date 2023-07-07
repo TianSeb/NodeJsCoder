@@ -7,10 +7,7 @@ import cookieParser from 'cookie-parser'
 import { sessionStore } from './config/Session'
 import config from './config/Config'
 import errorHandler from './config/ErrorConfig'
-import { initializeGitPassport } from './config/passport/Github'
-import { initializeLocalPassport } from './config/passport/LocalStrategy'
 import { initializeJwtPassport } from './config/passport/Jwt'
-// import { initializeGooglePassport } from './config/passport/Google'
 
 class Server {
 
@@ -28,10 +25,7 @@ class Server {
         this.app.use(session(sessionStore))
         this.app.use(passport.initialize())
         this.app.use(passport.session())
-        // initializeGooglePassport()
         initializeJwtPassport()
-        initializeLocalPassport()
-        initializeGitPassport()
         this.app.use(routes)
         this.app.use(errorHandler)
         this.httpServer = createServer(this.app)
