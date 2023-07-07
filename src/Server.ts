@@ -1,21 +1,18 @@
 import express, { Express } from 'express'
 import http, { createServer } from 'http'
 import routes from './routes/Routes'
-import passport from "passport"
-import session from 'express-session'
 import cookieParser from 'cookie-parser'
 import { sessionStore } from './config/Session'
 import config from './config/Config'
 import errorHandler from './config/ErrorConfig'
-import { initializeGitPassport } from './config/passport/Github'
-import { initializeLocalPassport } from './config/passport/LocalStrategy'
-// import { initializeGooglePassport } from './config/passport/Google'
+import { initializeJwtPassport } from './config/passport/Jwt'
 
 class Server {
 
     private app: Express
     private httpServer: http.Server
     private port: string
+    
     constructor() {
         this.app = express()
         this.app.set('view engine', 'ejs')
@@ -26,9 +23,7 @@ class Server {
         this.app.use(session(sessionStore))
         this.app.use(passport.initialize())
         this.app.use(passport.session())
-        // initializeGooglePassport()
-        initializeLocalPassport()
-        initializeGitPassport()
+        initializeJwtPassport()
         this.app.use(routes)
         this.app.use(errorHandler)
         this.httpServer = createServer(this.app)

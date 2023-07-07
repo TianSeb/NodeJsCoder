@@ -8,8 +8,7 @@ const UserSchema: Schema = new Schema<User>({
   password: { type: String, required: true },
   age: { type: Number },
   role: { type: String, default: 'user' },
-  isGithub: {type: Boolean, default: false },
-  isGoogle: {type: Boolean, default: false },
+  cart: { type: Schema.Types.ObjectId, ref: 'Cart', required: false },
 }, {
   versionKey: false
 })

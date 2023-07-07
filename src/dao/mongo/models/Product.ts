@@ -36,35 +36,3 @@ export const ProductSchemaValidator = z.object({
     thumbnails: z.array(z.string()).optional()
   })
 })
-
-export const buildProductQueryPipeline = (category: any, status: any, sort: any): any[] => {
-  const parsedStatus = status === 'true'
-  const pipeline: any[] = []
-
-  if (category) {
-    pipeline.push({
-      $match: {
-        category: category,
-      },
-    })
-  }
-
-  if (status !== undefined) {
-    pipeline.push({
-      $match: {
-        status: parsedStatus,
-      },
-    })
-  }
-
-  if (sort) {
-    const sortOrder = parseInt(sort)
-    pipeline.push({
-      $sort: {
-        price: sortOrder,
-      },
-    })
-  }
-
-  return pipeline
-}

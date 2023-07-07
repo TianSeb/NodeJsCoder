@@ -26,7 +26,7 @@ if (!isTestEnvironment) {
   mongoStoreOptions = {
     store: new MongoStore({
       mongoUrl: config.mongoDatabaseUrl,
-      ttl: 60
+      ttl: 180
     }),
     ...cookiesConfig
   }

@@ -32,8 +32,10 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Build Docker image
-        run: docker build -t test-app .
+      - name: Run tests
+        run: npm run test
+      # - name: Build Docker image
+      #   run: docker build -t test-app .
 
-      - name: Run tests in container
-        run: docker run --rm test-app
+      # - name: Run tests in container
+      #   run: docker run --rm test-app
