@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser'
 import { sessionStore } from './config/Session'
 import config from './config/Config'
 import errorHandler from './config/ErrorConfig'
+import session from 'express-session'
+import passport from 'passport'
 import { initializeJwtPassport } from './config/passport/Jwt'
 
 class Server {
