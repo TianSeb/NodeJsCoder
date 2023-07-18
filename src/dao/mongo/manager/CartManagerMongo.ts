@@ -1,12 +1,12 @@
 import { Types } from "mongoose"
-import { CartModel } from "./models/Cart"
-import { Cart } from "../../entities/ICart"
-import { CartDao } from "../interfaces/CartDao"
-import MongoDao from "./MongoDao"
+import { CartModel } from "../models/Cart"
+import { Cart } from "../../../entities/ICart"
+import { CartDao } from "../../interfaces/CartDao"
+import MongoDao from "../MongoDao"
 import createError from 'http-errors'
 import mongoose from "mongoose"
 
-export default class CartMongoDao extends MongoDao<Cart> implements CartDao  {
+export default class CartManagerMongo extends MongoDao<Cart> implements CartDao  {
 
     constructor() {
         super(CartModel)
