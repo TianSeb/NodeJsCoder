@@ -1,9 +1,9 @@
-import MongoDao from "./MongoDao"
-import { ChatMessageModel } from "./models/ChatMessage"
-import { ChatMessage } from "../../entities/IChatMessage"
-import { ChatDao } from "../interfaces/ChatDao"
+import MongoDao from "../MongoDao"
+import { ChatMessageModel } from "../models/ChatMessage"
+import { ChatMessage } from "../../../entities/IChatMessage"
+import { ChatDao } from "../../interfaces/ChatDao"
 
-export default class ChatMongoDao extends MongoDao<ChatMessage> implements ChatDao {
+export default class ChatManagerMongo extends MongoDao<ChatMessage> implements ChatDao {
 
     constructor() {
         super(ChatMessageModel)

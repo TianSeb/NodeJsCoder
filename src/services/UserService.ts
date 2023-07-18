@@ -1,8 +1,10 @@
 import DaoFactory from '../dao/DaoFactory'
+import createError from 'http-errors'
 import { User } from '../entities/IUser'
 import { createHash } from '../utils/Utils'
+import { isValidPassword } from '../utils/Utils'
 
-const userDao = DaoFactory.getUserDaoInstance()
+const userManager = DaoFactory.getUserDaoInstance()
 
 export default class UserService {
 
@@ -19,25 +21,37 @@ export default class UserService {
 
     async createUser(user: User): Promise<Partial<User>> {
         const { email, password } = user
+        const userExist = await userManager.findUser({ email })
+        if (userExist) throw new createError
+            .BadRequest(`User with email ${email} already exists`)
+
         if (this.isAdmin(email, password)) {
-            return await userDao.createUser({
+            return await userManager.createUser({
                 ...user,
                 password: createHash(password),
                 role: 'admin'
             })
         }
-        return await userDao.createUser({
+
+        return await userManager.createUser({
             ...user,
-            password: createHash(password)
+            password: createHash(password),
+            role: 'user'
         })
     }
 
     async loginUser(data: any): Promise<User> {
-        return await userDao.loginUser(data)
+        const { email, password } = data
+        const userFound = await userManager.findUser({ email })
+        console.log(userFound)
+        if (!userFound) throw new createError.Forbidden(`Wrong username or password`)
+        const checkPassword = isValidPassword(password, userFound)
+        if (!checkPassword) throw new createError.Forbidden(`Wrong username or password`)
+        return userFound
     }
 
     async findUser(filter: any): Promise<User | null> {
-        return await userDao.findUser(filter)
+        return await userManager.findUser(filter)
     }
 
     private isAdmin(email: string, password: string): boolean {

@@ -1,13 +1,13 @@
 import { ProductDao } from "./interfaces/ProductDao"
 import ProductFsDao from "./fs/ProductFsDao"
-import ProductMongoDao from "./mongo/ProductMongoDao"
+import ProductManagerMongo from "./mongo/manager/ProductManagerMongo"
 import { CartDao } from "./interfaces/CartDao"
 import CartFsDao from "./fs/CartFsDao"
-import CartMongoDao from "./mongo/CartMongoDao"
+import CartMongoDao from "./mongo/manager/CartManagerMongo"
 import { ChatDao } from "./interfaces/ChatDao"
-import ChatMongoDao from "./mongo/ChatMongoDao"
+import ChatManagerMongo from "./mongo/manager/ChatManagerMongo"
 import { UserDao } from "./interfaces/UserDao"
-import UserMongoDao from "./mongo/UserMongoDao"
+import UserManagerMongo from "./mongo/manager/UserManagerMongo"
 import config from "../config/Config"
 
 export default class DaoFactory {
@@ -24,7 +24,7 @@ export default class DaoFactory {
             if (config.environment === 'test') {
                 DaoFactory.productInstance = new ProductFsDao()
             } else {
-                DaoFactory.productInstance = new ProductMongoDao()
+                DaoFactory.productInstance = new ProductManagerMongo()
             }
         }
         return DaoFactory.productInstance
@@ -43,14 +43,14 @@ export default class DaoFactory {
 
     static getChatDaoInstance(): ChatDao {
         if (!DaoFactory.chatInstance) {
-            DaoFactory.chatInstance = new ChatMongoDao()
+            DaoFactory.chatInstance = new ChatManagerMongo()
         }
         return DaoFactory.chatInstance
     }
 
     static getUserDaoInstance(): UserDao {
         if (!DaoFactory.userInstance) {
-            DaoFactory.userInstance = new UserMongoDao()
+            DaoFactory.userInstance = new UserManagerMongo()
         }
         return DaoFactory.userInstance
     }

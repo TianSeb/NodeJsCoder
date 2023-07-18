@@ -1,11 +1,11 @@
 import createError from 'http-errors'
-import MongoDao from "./MongoDao"
+import MongoDao from "../MongoDao"
 import { PaginateResult, Aggregate } from 'mongoose'
-import { ProductModel } from "./models/Product"
-import { Product } from "../../entities/IProduct"
-import { ProductDao } from "../interfaces/ProductDao"
+import { ProductModel } from "../models/Product"
+import { Product } from "../../../entities/IProduct"
+import { ProductDao } from "../../interfaces/ProductDao"
 
-export default class ProductMongoDao extends MongoDao<Product> implements ProductDao {
+export default class ProductManagerMongo extends MongoDao<Product> implements ProductDao {
 
     constructor() {
         super(ProductModel)
