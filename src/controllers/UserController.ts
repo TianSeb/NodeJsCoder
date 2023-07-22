@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import UserService from "../services/UserService"
 import { generateToken } from "../config/jwt/JwtAuth"
+import { createResponse } from "../utils/Utils"
 
 const userService = UserService.getInstance()
 
@@ -12,8 +13,8 @@ export default class UserController {
         if (exist) return res.status(400).json({ msg: 'user already exists'})
         const user = { firstName, lastName, email, age, password }
         const newUser = await userService.createUser(user)
-    
-        return res.status(201).json({
+
+        createResponse(res, 201, {
             msg: `User ${newUser.firstName} created`
         })
     }
@@ -22,24 +23,22 @@ export default class UserController {
         const user = await userService.loginUser(req.body)
         const access_token = generateToken(user)
         res.header('AUTH_TOKEN', access_token)
-            .json({ msg: 'Login OK', access_token })    
+        createResponse(res, 201, { msg: 'Login OK', access_token })
     }
 
     async logout(req: Request, res: Response, next: NextFunction): Promise<any> {
         req.logOut((err: any) => {
-            if (err) res.send({ status: 'Logout ERROR', body: err })
-            res.send('Logout ok!')
+            if (err) createResponse(res, 404, { status: 'Logout ERROR', body: err })
+            createResponse(res, 200, { status: 'Logout ok!'})
         })
     }
 
     async createSession(req: Request, res: Response, next: NextFunction): Promise<any> {
-        return res.status(201).json({
-            session: req.session
-        })
+        createResponse(res, 201, { session: req.session })
     }
 
     async privateJwt(req: Request, res: Response, next: NextFunction): Promise<any> {
-        return res.status(200).json({
+        createResponse(res, 200, {
             status: 'OK',
             user: req.user,
         })

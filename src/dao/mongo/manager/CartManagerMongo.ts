@@ -6,7 +6,7 @@ import MongoDao from "../MongoDao"
 import createError from 'http-errors'
 import mongoose from "mongoose"
 
-export default class CartManagerMongo extends MongoDao<Cart> implements CartDao  {
+export default class CartManagerMongo extends MongoDao<Cart> implements CartDao {
 
     constructor() {
         super(CartModel)
@@ -14,13 +14,12 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
 
     async createCart(): Promise<Cart> {
         let newCart = await super.create({ products: [] })
-        return newCart 
+        return newCart
     }
 
     async getCart(cartId: string): Promise<Cart> {
         const cart = await CartModel.findById(cartId).populate('products.id')
         if (!cart) throw new createError.BadRequest(`Cart not found`)
-
         return cart
     }
 
@@ -32,10 +31,10 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
         const cart = await super.findById(cartId)
         if (!cart) throw new createError.BadRequest(`Cart not found`)
 
-        const productIndex = cart.products.findIndex((p:any) => p.id.toString() === productId)
+        const productIndex = cart.products.findIndex((p: any) => p.id.toString() === productId)
 
-        productIndex > -1 ? cart.products[productIndex].quantity += 1 : 
-                            cart.products.push({ id: productId, quantity: 1 })
+        productIndex > -1 ? cart.products[productIndex].quantity += 1 :
+            cart.products.push({ id: productId, quantity: 1 })
 
         await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
     }
@@ -44,13 +43,17 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
         const cart: any = await super.findById(cartId)
         if (!cart) throw new createError.BadRequest(`Cart not found`)
 
-        const newProducts = data.map((p:any) => {
-            const id = new Types.ObjectId(p.id)
-            const quantity = p.quantity
-            return { id, quantity }
-        })
+        data.forEach((product:any) => {
+            const productIndex = cart.products.findIndex((p: any) => p.id.toString() === product.id.toString())
+            if (productIndex !== -1) {
+                cart.products[productIndex].quantity = product.quantity
+            } else {
+                cart.products.push(product)
+            }
 
-        await CartModel.findOneAndUpdate({ _id: cartId }, { products: newProducts })
+        })
+        
+        await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
         return cart
     }
 
@@ -60,6 +63,19 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
         cart.products[productIndex].quantity = data.quantity
         await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
         return cart
+    }
+
+    private async findProductInCart(cartId: string, productId: string): Promise<any> {
+        const cart = await super.findById(cartId)
+        if (!cart) throw new createError.BadRequest(`Cart not found`)
+
+        const productIndex = cart.products.findIndex((p: any) => p.id.toString() === productId)
+        if (productIndex < 0) throw new createError.BadRequest(`Product not found`)
+
+        return {
+            cart,
+            productIndex
+        }
     }
 
     async deleteCartById(cartId: any): Promise<number> {
@@ -78,18 +94,5 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
         const { cart, productIndex } = await this.findProductInCart(cartId, productId)
         cart.products.splice(productIndex, 1)
         await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
-    }
-
-    private async findProductInCart(cartId: string, productId: string): Promise<any> {
-        const cart = await super.findById(cartId)
-        if (!cart) throw new createError.BadRequest(`Cart not found`)
-
-        const productIndex = cart.products.findIndex((p:any) => p.id.toString() === productId)
-        if (productIndex < 0) throw new createError.BadRequest(`Product not found`)
-
-        return {
-            cart,
-            productIndex
-        }
     }
 }

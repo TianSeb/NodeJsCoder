@@ -3,7 +3,7 @@ import ProductFsDao from "./fs/ProductFsDao"
 import ProductManagerMongo from "./mongo/manager/ProductManagerMongo"
 import { CartDao } from "./interfaces/CartDao"
 import CartFsDao from "./fs/CartFsDao"
-import CartMongoDao from "./mongo/manager/CartManagerMongo"
+import CartManagerMongo from "./mongo/manager/CartManagerMongo"
 import { ChatDao } from "./interfaces/ChatDao"
 import ChatManagerMongo from "./mongo/manager/ChatManagerMongo"
 import { UserDao } from "./interfaces/UserDao"
@@ -19,7 +19,7 @@ export default class DaoFactory {
     private constructor() {
     }
 
-    static getProductDaoInstance(): ProductDao {
+    static getProductManagerInstance(): ProductDao {
         if (!DaoFactory.productInstance) {
             if (config.environment === 'test') {
                 DaoFactory.productInstance = new ProductFsDao()
@@ -30,12 +30,12 @@ export default class DaoFactory {
         return DaoFactory.productInstance
     }
 
-    static getCartDaoInstance(): CartDao {
+    static getCartManagerInstance(): CartDao {
         if (!DaoFactory.cartInstance) {
             if (config.environment === 'test') {
                 DaoFactory.cartInstance = new CartFsDao()
             } else {
-                DaoFactory.cartInstance = new CartMongoDao()
+                DaoFactory.cartInstance = new CartManagerMongo()
             }
         }
         return DaoFactory.cartInstance

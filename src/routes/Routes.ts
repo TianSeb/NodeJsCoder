@@ -8,7 +8,7 @@ import usersRoute from "./User.routes"
 
 const routes = Router()
 
-routes.use('/api', passport.authenticate('jwt'), isAuthenticated, productsRoute, cartsRoute)
+routes.use('/api', productsRoute, cartsRoute) //  passport.authenticate('jwt'), isAuthenticated,
 routes.use('/users', usersRoute)
 routes.use('/', viewsRoutes)
 
