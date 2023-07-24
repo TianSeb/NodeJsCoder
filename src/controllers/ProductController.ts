@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import config from "../config/Config"
 import ProductService from "../services/ProductService"
-import { CustomProductRequest } from "../middlewares/ProductMw"
+import { CustomProductRequest } from "../middlewares/validators/ProductMw"
 import { createResponse } from "../utils/Utils"
 
 const productService = ProductService.getInstance()

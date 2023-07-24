@@ -1,5 +1,5 @@
 import { Request as ExpressRequest, Response, NextFunction } from "express"
-import ProductService from "../services/ProductService"
+import ProductService from "../../services/ProductService"
 import createError from 'http-errors'
 
 const productService = ProductService.getInstance()

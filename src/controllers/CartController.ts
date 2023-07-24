@@ -23,11 +23,15 @@ export default class CartController {
     }
 
     async createCart(req: Request, res: Response, next: NextFunction): Promise<any> {
-        createResponse(res, 200, await cartService.createCart())
+        createResponse(res, 201, await cartService.createCart())
     }
 
     async saveProductToCart(req: Request, res: Response, next: NextFunction): Promise<any> {
-        createResponse(res, 200, await cartService.saveProductToCart(req.params.cid, req.params.pid))
+        createResponse(res, 201, await cartService.saveProductToCart(req.params.cid, req.params.pid))
+    }
+
+    async purchaseTicket(req: Request, res: Response, next: NextFunction): Promise<any> {
+        createResponse(res, 201, await cartService.purchaseTicket(req.params.cid))
     }
 
     async deleteCartById(req: Request, res: Response, next: NextFunction): Promise<any> {

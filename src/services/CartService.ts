@@ -4,11 +4,11 @@ import { Cart } from '../entities/ICart'
 
 export default class CartService {
     private static instance: CartService | null = null
-    private cartDao
+    private cartManager
     private cartRepository
 
     constructor() {
-        this.cartDao = DaoFactory.getCartManagerInstance()
+        this.cartManager = DaoFactory.getCartManagerInstance()
         this.cartRepository = CartRepository.getInstance()
     }
 
@@ -20,7 +20,7 @@ export default class CartService {
     }
 
     async createCart(): Promise<Cart> {
-        let newCart: Cart = await this.cartDao.createCart()
+        let newCart: Cart = await this.cartManager.createCart()
         return newCart
     }
 
@@ -30,32 +30,36 @@ export default class CartService {
     }
 
     async getCarts(): Promise<Cart[]> {
-        return await this.cartDao.getCarts()
+        return await this.cartManager.getCarts()
     }
 
     async saveProductToCart(cartId: string, productId: string): Promise<void> {
-        await this.cartDao.saveProductToCart(cartId, productId)
+        await this.cartManager.saveProductToCart(cartId, productId)
+    }
+
+    async purchaseTicket(cartId: string): Promise<any> {
+
     }
 
     async deleteCartById(cartId: string): Promise<void> {
-        await this.cartDao.deleteCartById(cartId)
+        await this.cartManager.deleteCartById(cartId)
     }
 
     async deleteAll(): Promise<void> {
-        await this.cartDao.deleteAll()
+        await this.cartManager.deleteAll()
     }
 
     async deleteProductInCart(cartId: string, productId: string): Promise<void> {
-        await this.cartDao.deleteProductInCart(cartId, productId)
+        await this.cartManager.deleteProductInCart(cartId, productId)
     }
 
     async updateCart(cartId: string, data: any): Promise<Cart> {
-        let updatedCart = await this.cartDao.updateCart(cartId, data)
+        let updatedCart = await this.cartManager.updateCart(cartId, data)
         return updatedCart
     }
 
     async updateProductInCart(cartId: string, productId: string, data: any): Promise<Cart> {
-        let updatedCart = await this.cartDao.updateProductInCart(cartId, productId, data)
+        let updatedCart = await this.cartManager.updateProductInCart(cartId, productId, data)
         return updatedCart
     }
 }

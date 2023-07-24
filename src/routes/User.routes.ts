@@ -7,9 +7,9 @@ const usersRoute = Router()
 const userController = new UserController()
 
 usersRoute.post('/register', asyncHandler(userController.registerJwt))
-usersRoute.post('/login', asyncHandler(userController.loginJwt))
-usersRoute.post('/logout', asyncHandler(userController.logout))
-usersRoute.get('/session', asyncHandler(userController.createSession))
-usersRoute.get('/jwt-test', passport.authenticate('jwt'), asyncHandler(userController.privateJwt))
+          .post('/login', asyncHandler(userController.loginJwt))
+          .post('/logout', asyncHandler(userController.logout))
+          .get('/session', asyncHandler(userController.createSession))
+          .get('/jwt-test', passport.authenticate('jwt'), asyncHandler(userController.privateJwt))
 
 export default usersRoute
