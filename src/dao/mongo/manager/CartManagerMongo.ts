@@ -95,4 +95,44 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
         cart.products.splice(productIndex, 1)
         await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
     }
+
+    async purchase(cartId: string): Promise<void> {
+        const session = await mongoose.startSession()
+        session.startTransaction()
+
+        try {
+            const cart = await this.getCart(cartId)
+            let totalPrice = 0
+            for (const item of cart.products) {
+                const product:any = item.id
+                const requestedQuantity = item.quantity
+                if (product.stock < requestedQuantity) {
+                    throw createError
+                    .NotAcceptable(`No hay stock para el producto ${product.title}:
+                     cantidad requerida: ${requestedQuantity}
+                     cantidad stock: ${product.stock}`)
+                }
+                totalPrice += product.price * requestedQuantity
+            }
+
+            for (const item of cart.products) {
+                const product:any = item.id
+                const requestedQuantity = item.quantity
+                product.stock -= requestedQuantity
+                await product.save()
+            }
+
+            cart.totalPrice = totalPrice
+            await cart.save()
+        
+            await session.commitTransaction()
+            session.endSession()
+        
+            console.log(`Purchase completed successfully for cart ${cart.id}`)
+        } catch (error: any) {
+            await session.abortTransaction()
+            session.endSession()
+            throw createError.InternalServerError(error.msg)
+        }
+    }
 }

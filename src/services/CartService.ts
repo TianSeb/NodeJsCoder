@@ -27,7 +27,7 @@ export default class CartService {
     }
 
     async getCart(cartId: string): Promise<Cart | null> {
-        const cart: Cart | null = await this.cartRepository.getCartById(cartId)
+        const cart: Cart | null = await this.cartManager.getCart(cartId) 
         return cart
     }
 
