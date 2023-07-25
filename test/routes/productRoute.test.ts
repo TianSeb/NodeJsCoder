@@ -1,8 +1,8 @@
 import ProductService from '../../src/services/ProductService'
 import ProductController from "../../src/controllers/ProductController"
 import createError from 'http-errors'
-import { CustomProductRequest } from '../../src/middlewares/ProductMw'
-import { pipelineParams } from '../../src/middlewares/ProductMw'
+import { CustomProductRequest } from '../../src/middlewares/validators/ProductMw'
+import { pipelineParams } from '../../src/middlewares/validators/ProductMw'
 
 /** SET UP **/
 const productService = ProductService.getInstance()

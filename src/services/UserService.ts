@@ -10,8 +10,8 @@ export default class UserService {
     private userManager
 
     constructor() {
-        this.userManager = DaoFactory.getUserDaoInstance()
-     }
+        this.userManager = DaoFactory.getUserManagerInstance()
+    }
 
     static getInstance(): UserService {
         if (!UserService.instance) {

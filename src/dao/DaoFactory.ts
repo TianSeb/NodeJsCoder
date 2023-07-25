@@ -8,6 +8,7 @@ import { ChatDao } from "./interfaces/ChatDao"
 import ChatManagerMongo from "./mongo/manager/ChatManagerMongo"
 import { UserDao } from "./interfaces/UserDao"
 import UserManagerMongo from "./mongo/manager/UserManagerMongo"
+import TicketManagerMongo from "./mongo/manager/TicketManagerMongo"
 import config from "../config/Config"
 
 export default class DaoFactory {
@@ -15,6 +16,7 @@ export default class DaoFactory {
     private static cartInstance: CartDao
     private static chatInstance: ChatDao
     private static userInstance: UserDao
+    private static ticketInstance: TicketManagerMongo
 
     private constructor() {
     }
@@ -48,10 +50,17 @@ export default class DaoFactory {
         return DaoFactory.chatInstance
     }
 
-    static getUserDaoInstance(): UserDao {
+    static getUserManagerInstance(): UserDao {
         if (!DaoFactory.userInstance) {
             DaoFactory.userInstance = new UserManagerMongo()
         }
         return DaoFactory.userInstance
+    }
+
+    static getTicketManagerInstance(): TicketManagerMongo {
+        if (!DaoFactory.ticketInstance) {
+            DaoFactory.ticketInstance = new TicketManagerMongo()
+        }
+        return DaoFactory.ticketInstance
     }
 }

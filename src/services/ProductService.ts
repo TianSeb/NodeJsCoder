@@ -44,8 +44,8 @@ export default class ProductService {
         return await this.productRepository.getProducts(pipeline, options)
     }
 
-    async getProductById(id: any): Promise<ProductResponseDTO> {
-        const product = await this.productRepository.getProductById(id)
+    async getProductById(id: any): Promise<Product> {
+        const product = await this.productManager.getProductById(id)  // this.productRepository.getProductById(id)
         if (product != null) {
             return product
         } else {

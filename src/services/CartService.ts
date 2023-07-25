@@ -6,10 +6,12 @@ export default class CartService {
     private static instance: CartService | null = null
     private cartManager
     private cartRepository
+    private ticketManager
 
     constructor() {
         this.cartManager = DaoFactory.getCartManagerInstance()
         this.cartRepository = CartRepository.getInstance()
+        this.ticketManager = DaoFactory.getTicketManagerInstance()
     }
 
     static getInstance(): CartService {
@@ -38,6 +40,8 @@ export default class CartService {
     }
 
     async purchaseTicket(cartId: string): Promise<any> {
+        const cart = await this.cartManager.getCart(cartId)
+
 
     }
 
