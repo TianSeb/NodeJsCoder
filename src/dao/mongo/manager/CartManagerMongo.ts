@@ -5,6 +5,7 @@ import { CartDao } from "../../interfaces/CartDao"
 import MongoDao from "../MongoDao"
 import createError from 'http-errors'
 import mongoose from "mongoose"
+import { ProductModel } from "../models/Product"
 
 export default class CartManagerMongo extends MongoDao<Cart> implements CartDao {
 
@@ -43,7 +44,7 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
         const cart: any = await super.findById(cartId)
         if (!cart) throw new createError.BadRequest(`Cart not found`)
 
-        data.forEach((product:any) => {
+        data.forEach((product: any) => {
             const productIndex = cart.products.findIndex((p: any) => p.id.toString() === product.id.toString())
             if (productIndex !== -1) {
                 cart.products[productIndex].quantity = product.quantity
@@ -52,7 +53,7 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
             }
 
         })
-        
+
         await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
         return cart
     }
@@ -96,43 +97,40 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
         await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
     }
 
-    async purchase(cartId: string): Promise<void> {
+    async purchase(cartId: string): Promise<Cart | any> {
         const session = await mongoose.startSession()
         session.startTransaction()
 
         try {
             const cart = await this.getCart(cartId)
-            let totalPrice = 0
-            for (const item of cart.products) {
-                const product:any = item.id
-                const requestedQuantity = item.quantity
-                if (product.stock < requestedQuantity) {
-                    throw createError
-                    .NotAcceptable(`No hay stock para el producto ${product.title}:
-                     cantidad requerida: ${requestedQuantity}
-                     cantidad stock: ${product.stock}`)
-                }
-                totalPrice += product.price * requestedQuantity
-            }
+            const updateOperations = []
 
             for (const item of cart.products) {
-                const product:any = item.id
+                const product: any = item.id
                 const requestedQuantity = item.quantity
-                product.stock -= requestedQuantity
-                await product.save()
+                cart.totalPrice += product.price * requestedQuantity
+
+                updateOperations.push({
+                    updateOne: {
+                        filter: { _id: item.id, stock: { $gte: item.quantity } },
+                        update: { $inc: { stock: -item.quantity } }
+                    }
+                })
+            }
+            const result = await ProductModel.bulkWrite(updateOperations, { session })
+
+            if (result.modifiedCount !== cart.products.length) {
+                throw createError.NotAcceptable('Out of Stock')
             }
 
-            cart.totalPrice = totalPrice
-            await cart.save()
-        
             await session.commitTransaction()
             session.endSession()
-        
             console.log(`Purchase completed successfully for cart ${cart.id}`)
+            return cart
         } catch (error: any) {
             await session.abortTransaction()
             session.endSession()
-            throw createError.InternalServerError(error.msg)
+            throw error
         }
     }
 }

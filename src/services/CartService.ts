@@ -27,7 +27,7 @@ export default class CartService {
     }
 
     async getCart(cartId: string): Promise<Cart | null> {
-        const cart: Cart | null = await this.cartManager.getCart(cartId) 
+        const cart: Cart | null = await this.cartManager.getCart(cartId)
         return cart
     }
 
@@ -40,9 +40,7 @@ export default class CartService {
     }
 
     async purchaseTicket(cartId: string): Promise<any> {
-        const cart = await this.cartManager.getCart(cartId)
-
-
+        return await this.cartManager.purchase(cartId)
     }
 
     async deleteCartById(cartId: string): Promise<void> {

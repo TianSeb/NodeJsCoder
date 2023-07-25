@@ -12,7 +12,7 @@ const cartProductSchema = new Schema<CartItem>({
 
 const cartSchema = new Schema<Cart>({
     products: [cartProductSchema],
-    totalPrice: { type: Number, required: false }
+    totalPrice: { type: Number, required: false, default: 0 }
 }, { versionKey: false })
 
 cartSchema
