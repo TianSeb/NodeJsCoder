@@ -122,7 +122,7 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
             if (result.modifiedCount !== cart.products.length) {
                 throw createError.NotAcceptable('Out of Stock')
             }
-
+ 
             await session.commitTransaction()
             session.endSession()
             console.log(`Purchase completed successfully for cart ${cart.id}`)

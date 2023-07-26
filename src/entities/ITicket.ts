@@ -1,7 +1,6 @@
 export interface Ticket {
-    id?: string
     code: string
-    purchase_datetime: string
+    purchase_datetime: Date
     amount: number
     purchaser: string
 }
