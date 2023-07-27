@@ -6,6 +6,7 @@ import MongoDao from "../MongoDao"
 import createError from 'http-errors'
 import mongoose from "mongoose"
 import { ProductModel } from "../models/Product"
+import { sendOrderEmail } from "../../../config/email/email"
 
 export default class CartManagerMongo extends MongoDao<Cart> implements CartDao {
 
@@ -97,13 +98,15 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
         await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
     }
 
-    async purchase(cartId: string): Promise<Cart | any> {
+    async purchase(cartId: string, userEmail: string): Promise<Cart | any> {
         const session = await mongoose.startSession()
         session.startTransaction()
 
         try {
-            const cart = await this.getCart(cartId)
+            const cart = await CartModel.findById(cartId).populate('products.id')
+            if (!cart) throw new createError.BadRequest(`Cart not found`)
             const updateOperations = []
+            const productsForEmail = []
 
             for (const item of cart.products) {
                 const product: any = item.id
@@ -116,13 +119,24 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
                         update: { $inc: { stock: -item.quantity } }
                     }
                 })
+                productsForEmail.push({
+                    name: product.title,
+                    qty: requestedQuantity,
+                    price: product.price,
+                    total: requestedQuantity * product.price
+                })
             }
             const result = await ProductModel.bulkWrite(updateOperations, { session })
 
             if (result.modifiedCount !== cart.products.length) {
                 throw createError.NotAcceptable('Out of Stock')
             }
- 
+            
+            // cart.products = []
+            // cart.totalPrice = 0
+            // await cart.save({ session })
+            await sendOrderEmail(userEmail, cart.totalPrice, productsForEmail)
+
             await session.commitTransaction()
             session.endSession()
             console.log(`Purchase completed successfully for cart ${cart.id}`)

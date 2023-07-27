@@ -90,6 +90,6 @@ export default class CartFsDao extends FsDao<Cart> implements CartDao {
         return new CartModelFs()
     }
 
-    async purchase(cartId: string) {
+    async purchase(cartId: string, userEmail: string) {
     }
 }

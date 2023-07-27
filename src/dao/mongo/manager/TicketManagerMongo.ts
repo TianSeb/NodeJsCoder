@@ -11,17 +11,18 @@ export default class TicketManagerMongo extends MongoDao<Ticket> {
         super(TicketModel)
     }
 
-    async createTicket(amount: Number): Promise<Ticket> {
+    async createTicket(amount: Number, userEmail: string): Promise<Ticket> {
         try {
             const ticketData = {
                 code: uuidv4(),
                 amount: amount,
-                purchaser: 'Prueba',
+                purchaser: userEmail,
             }
 
             const ticketInstance = new TicketModel(ticketData)
             const savedTicket = await ticketInstance.save()
-            console.log(`Ticket Saved`)
+  
+            console.log(`Ticket Saved ${savedTicket}`)
             return savedTicket
         } catch (error: any) {
             throw createError.RequestTimeout("There was a problem while creating purchase ticket")

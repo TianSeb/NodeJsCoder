@@ -10,5 +10,5 @@ export interface CartDao {
     deleteProductInCart(cartId: string, productId: string): Promise<void>
     updateCart(cartId: string, data: any): Promise<Cart>
     updateProductInCart(cartId: string, productId: string, data: any): Promise<Cart>
-    purchase(cartId: string): Promise<Cart | any>
+    purchase(cartId: string, userEmail: string): Promise<Cart | any>
 }

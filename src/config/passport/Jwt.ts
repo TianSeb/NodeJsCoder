@@ -18,7 +18,6 @@ const verifyToken: any = async (jwt_payload:any, done:any): Promise<any> => {
 }
 
 passport.serializeUser((user: any, done: any) => {
-    console.log('user--->', user)
     done(null, user.userId)
 })
 

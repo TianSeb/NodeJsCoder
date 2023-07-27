@@ -3,14 +3,17 @@ import createError from 'http-errors'
 import { User } from '../entities/IUser'
 import { createHash } from '../utils/Utils'
 import { isValidPassword } from '../utils/Utils'
+import UserRepository from '../dao/mongo/repository/UserRepository'
 
 export default class UserService {
 
     private static instance: UserService | null = null
     private userManager
+    private userRepository
 
     constructor() {
         this.userManager = DaoFactory.getUserManagerInstance()
+        this.userRepository = UserRepository.getInstance()
     }
 
     static getInstance(): UserService {
@@ -44,7 +47,6 @@ export default class UserService {
     async loginUser(data: any): Promise<User> {
         const { email, password } = data
         const userFound = await this.userManager.findUser({ email })
-        console.log(userFound)
         if (!userFound) throw new createError.Forbidden(`Wrong username or password`)
         const checkPassword = isValidPassword(password, userFound)
         if (!checkPassword) throw new createError.Forbidden(`Wrong username or password`)
@@ -56,7 +58,7 @@ export default class UserService {
     }
 
     private isAdmin(email: string, password: string): boolean {
-        return email === 'adminCoder@coder.com' &&
-            password === 'adminCoder123'
+        return email === 'admin@user.com' &&
+            password === 'admin1234'
     }
 }

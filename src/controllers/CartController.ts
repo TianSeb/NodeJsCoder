@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import CartService from "../services/CartService"
 import { createResponse } from "../utils/Utils"
+import UserResponseDTO from "../dao/mongo/dtos/user/User.Response"
 
 const cartService = CartService.getInstance()
 
@@ -31,7 +32,13 @@ export default class CartController {
     }
 
     async purchaseTicket(req: Request, res: Response, next: NextFunction): Promise<any> {
-        createResponse(res, 201, await cartService.purchaseTicket(req.params.cid))
+        let user: UserResponseDTO
+        let purchaseOrder: any = null
+        if (req.user) {
+            user = new UserResponseDTO(req.user)
+            purchaseOrder = await cartService.purchaseTicket(req.params.cid, user.getEmail())
+        }
+        createResponse(res, 201, purchaseOrder)
     }
 
     async deleteCartById(req: Request, res: Response, next: NextFunction): Promise<any> {

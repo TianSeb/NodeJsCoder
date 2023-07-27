@@ -39,10 +39,9 @@ export default class CartService {
         await this.cartManager.saveProductToCart(cartId, productId)
     }
 
-    async purchaseTicket(cartId: string): Promise<any> {
-        const cart = await this.cartManager.purchase(cartId)
-        const ticket = await this.ticketManager.createTicket(cart.totalPrice)
-        console.log(ticket)
+    async purchaseTicket(cartId: string, userEmail: string): Promise<any> {
+        const cart = await this.cartManager.purchase(cartId, userEmail)
+        const ticket = await this.ticketManager.createTicket(cart.totalPrice, userEmail)
         return ticket
     }
 
@@ -60,6 +59,7 @@ export default class CartService {
 
     async updateCart(cartId: string, data: any): Promise<Cart> {
         let updatedCart = await this.cartManager.updateCart(cartId, data)
+        console.log(updatedCart)
         return updatedCart
     }
 
