@@ -1,5 +1,4 @@
 import { Router } from "express"
-import passport from "passport"
 import CartController from "../controllers/CartController"
 import asyncHandler from 'express-async-handler'
 
@@ -12,7 +11,7 @@ cartsRoute.get('/carts',asyncHandler(cartController.getCarts))
           .put('/carts/:cid/product/:pid',asyncHandler(cartController.updateProductInCart))
           .post('/carts',asyncHandler(cartController.createCart))
           .post('/carts/:cid/product/:pid',asyncHandler(cartController.saveProductToCart))
-          .post('/carts/:cid/purchase',passport.authenticate('jwt'), asyncHandler(cartController.purchaseTicket))
+          .post('/carts/:cid/purchase', asyncHandler(cartController.purchaseTicket))
           .delete('/carts/:cid',asyncHandler(cartController.deleteCartById))
           .delete('/carts',asyncHandler(cartController.deleteAll))
           .delete('/carts/:cid/product/:pid',asyncHandler(cartController.deleteProductInCart))

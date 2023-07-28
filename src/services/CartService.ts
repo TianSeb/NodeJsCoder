@@ -1,6 +1,7 @@
 import DaoFactory from '../dao/DaoFactory'
 import CartRepository from '../dao/mongo/repository/CartRepository'
 import { Cart } from '../entities/ICart'
+import { sendOrderEmail } from '../config/email/email'
 
 export default class CartService {
     private static instance: CartService | null = null
@@ -40,8 +41,9 @@ export default class CartService {
     }
 
     async purchaseTicket(cartId: string, userEmail: string): Promise<any> {
-        const cart = await this.cartManager.purchase(cartId, userEmail)
-        const ticket = await this.ticketManager.createTicket(cart.totalPrice, userEmail)
+        const response = await this.cartManager.purchase(cartId, userEmail)
+        const ticket = await this.ticketManager.createTicket(response.totalPrice, userEmail)
+        await sendOrderEmail(userEmail, response.totalPrice, response.productsForEmail)
         return ticket
     }
 

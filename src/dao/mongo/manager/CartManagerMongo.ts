@@ -6,7 +6,6 @@ import MongoDao from "../MongoDao"
 import createError from 'http-errors'
 import mongoose from "mongoose"
 import { ProductModel } from "../models/Product"
-import { sendOrderEmail } from "../../../config/email/email"
 
 export default class CartManagerMongo extends MongoDao<Cart> implements CartDao {
 
@@ -105,46 +104,62 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
         try {
             const cart = await CartModel.findById(cartId).populate('products.id')
             if (!cart) throw new createError.BadRequest(`Cart not found`)
-            const updateOperations = []
-            const productsForEmail = []
 
-            for (const item of cart.products) {
-                const product: any = item.id
-                const requestedQuantity = item.quantity
-                cart.totalPrice += product.price * requestedQuantity
+            const calculateOrder = this.calculatePurchaseOrder(cart)
+            const updateOperations = calculateOrder.updateOperations
+            const productsForEmail = calculateOrder.productsForEmail
+            let totalPrice = calculateOrder.totalPrice
 
-                updateOperations.push({
-                    updateOne: {
-                        filter: { _id: item.id, stock: { $gte: item.quantity } },
-                        update: { $inc: { stock: -item.quantity } }
-                    }
-                })
-                productsForEmail.push({
-                    name: product.title,
-                    qty: requestedQuantity,
-                    price: product.price,
-                    total: requestedQuantity * product.price
-                })
-            }
             const result = await ProductModel.bulkWrite(updateOperations, { session })
-
             if (result.modifiedCount !== cart.products.length) {
                 throw createError.NotAcceptable('Out of Stock')
             }
             
-            // cart.products = []
-            // cart.totalPrice = 0
-            // await cart.save({ session })
-            await sendOrderEmail(userEmail, cart.totalPrice, productsForEmail)
+            cart.products = []
+            await cart.save({ session })
 
             await session.commitTransaction()
             session.endSession()
             console.log(`Purchase completed successfully for cart ${cart.id}`)
-            return cart
+            return {
+                userEmail,
+                totalPrice,
+                productsForEmail
+            }
         } catch (error: any) {
             await session.abortTransaction()
             session.endSession()
             throw error
+        }
+    }
+
+    private calculatePurchaseOrder(cart: Cart) {
+        const updateOperations = []
+        const productsForEmail = []
+        let totalPrice = 0
+
+        for (const item of cart.products) {
+            const product: any = item.id
+            const requestedQuantity = item.quantity
+            totalPrice += product.price * requestedQuantity
+
+            updateOperations.push({
+                updateOne: {
+                    filter: { _id: item.id, stock: { $gte: item.quantity } },
+                    update: { $inc: { stock: -item.quantity } }
+                }
+            })
+            productsForEmail.push({
+                name: product.title,
+                qty: requestedQuantity,
+                price: product.price,
+                total: requestedQuantity * product.price
+            })
+        }
+        return {
+            updateOperations,
+            productsForEmail,
+            totalPrice
         }
     }
 }
