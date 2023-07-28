@@ -89,4 +89,7 @@ export default class CartFsDao extends FsDao<Cart> implements CartDao {
     async updateProductInCart(cartId: string, productId: string, data: any): Promise<Cart> {
         return new CartModelFs()
     }
+
+    async purchase(cartId: string, userEmail: string) {
+    }
 }

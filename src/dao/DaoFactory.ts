@@ -3,11 +3,12 @@ import ProductFsDao from "./fs/ProductFsDao"
 import ProductManagerMongo from "./mongo/manager/ProductManagerMongo"
 import { CartDao } from "./interfaces/CartDao"
 import CartFsDao from "./fs/CartFsDao"
-import CartMongoDao from "./mongo/manager/CartManagerMongo"
+import CartManagerMongo from "./mongo/manager/CartManagerMongo"
 import { ChatDao } from "./interfaces/ChatDao"
 import ChatManagerMongo from "./mongo/manager/ChatManagerMongo"
 import { UserDao } from "./interfaces/UserDao"
 import UserManagerMongo from "./mongo/manager/UserManagerMongo"
+import TicketManagerMongo from "./mongo/manager/TicketManagerMongo"
 import config from "../config/Config"
 
 export default class DaoFactory {
@@ -15,11 +16,12 @@ export default class DaoFactory {
     private static cartInstance: CartDao
     private static chatInstance: ChatDao
     private static userInstance: UserDao
+    private static ticketInstance: TicketManagerMongo
 
     private constructor() {
     }
 
-    static getProductDaoInstance(): ProductDao {
+    static getProductManagerInstance(): ProductDao {
         if (!DaoFactory.productInstance) {
             if (config.environment === 'test') {
                 DaoFactory.productInstance = new ProductFsDao()
@@ -30,12 +32,12 @@ export default class DaoFactory {
         return DaoFactory.productInstance
     }
 
-    static getCartDaoInstance(): CartDao {
+    static getCartManagerInstance(): CartDao {
         if (!DaoFactory.cartInstance) {
             if (config.environment === 'test') {
                 DaoFactory.cartInstance = new CartFsDao()
             } else {
-                DaoFactory.cartInstance = new CartMongoDao()
+                DaoFactory.cartInstance = new CartManagerMongo()
             }
         }
         return DaoFactory.cartInstance
@@ -48,10 +50,17 @@ export default class DaoFactory {
         return DaoFactory.chatInstance
     }
 
-    static getUserDaoInstance(): UserDao {
+    static getUserManagerInstance(): UserDao {
         if (!DaoFactory.userInstance) {
             DaoFactory.userInstance = new UserManagerMongo()
         }
         return DaoFactory.userInstance
+    }
+
+    static getTicketManagerInstance(): TicketManagerMongo {
+        if (!DaoFactory.ticketInstance) {
+            DaoFactory.ticketInstance = new TicketManagerMongo()
+        }
+        return DaoFactory.ticketInstance
     }
 }

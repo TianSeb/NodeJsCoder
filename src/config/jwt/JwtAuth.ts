@@ -16,7 +16,7 @@ export const generateToken = (user: Partial<User>) => {
     }
 
     const token = jwt.sign(payload, PRIVATE_KEY, {
-        expiresIn: '10m'
+        expiresIn: '30m'
     })
     return token
 }

@@ -1,13 +1,12 @@
 import { Request, Response, NextFunction } from 'express'
 import createError from 'http-errors'
+import { createResponse } from '../utils/Utils'
 
 const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof createError.HttpError || err instanceof createError.BadRequest) {
-        res.status(err.statusCode).json({
-            error: err.message
-        })
+        createResponse(res, err.statusCode, { error: err.message })
     } else {
-        res.status(500).json({
+        createResponse(res, 500, {
             error: 'Internal Server Error',
             msg: err.message
         })

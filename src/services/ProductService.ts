@@ -1,15 +1,20 @@
 import mongoose, { PaginateResult } from 'mongoose'
 import DaoFactory from '../dao/DaoFactory'
+import ProductRepository from '../dao/mongo/repository/ProductRepository'
 import { Product } from '../entities/IProduct'
+import ProductResponseDTO from '../dao/mongo/dtos/product/Product.response'
 import { sendSocketMessage } from '../socket/SocketClient'
 import createError from 'http-errors'
 
-const productDao = DaoFactory.getProductDaoInstance()
-
 export default class ProductService {
     private static instance: ProductService | null = null
+    private productManager
+    private productRepository
 
-    constructor() {}
+    constructor() {
+        this.productManager = DaoFactory.getProductManagerInstance()
+        this.productRepository = ProductRepository.getInstance()
+    }
 
     static getInstance(): ProductService {
         if (!ProductService.instance) {
@@ -20,7 +25,7 @@ export default class ProductService {
     
     async addProduct(data: any): Promise<Product> {
         try {
-            const savedProduct = await productDao.addProduct(data)
+            const savedProduct = await this.productManager.addProduct(data)
             sendSocketMessage("productSaved", savedProduct)
             return savedProduct
 
@@ -36,12 +41,11 @@ export default class ProductService {
     }
 
     async getProducts(pipeline?:any, options?:any): Promise<PaginateResult<Product> | any> {
-        const products = await productDao.getProducts(pipeline, options)
-        return products
+        return await this.productRepository.getProducts(pipeline, options)
     }
 
     async getProductById(id: any): Promise<Product> {
-        const product = await productDao.getProductById(id)
+        const product = await this.productManager.getProductById(id)  // this.productRepository.getProductById(id)
         if (product != null) {
             return product
         } else {
@@ -50,7 +54,7 @@ export default class ProductService {
     }
 
     async deleteProductById(id: any): Promise<void> {
-        const deleted = await productDao.deleteProductById(id)
+        const deleted = await this.productManager.deleteProductById(id)
         if (deleted === 1) {
             sendSocketMessage("productDeleted", id)
         } else {
@@ -59,12 +63,12 @@ export default class ProductService {
     }
 
     async deleteAll(): Promise<void> {
-        await productDao.deleteAll()
+        await this.productManager.deleteAll()
     }
 
     async updateProductById(prodId: string, updatedFields: Partial<Product>): Promise<Product> {
         try {
-            let product = await productDao.updateProductById(prodId, updatedFields)
+            let product = await this.productManager.updateProductById(prodId, updatedFields)
             sendSocketMessage("productSaved", product)
     
             return product
