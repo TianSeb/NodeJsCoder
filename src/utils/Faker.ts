@@ -2,23 +2,45 @@ import { faker } from '@faker-js/faker'
 import { Product } from '../entities/IProduct'
 import { Fruits, Vegetables, Cheese } from './Payload'
 
-function createRandomProduct(): Product {
+export function generateRandomProducts(enumType: string, count: number): Product[] {
+    return faker.helpers.multiple(() => createRandomProduct(enumType), {
+        count: count,
+    })
+}
+
+function getRandomEnumValue(enumType: string): string {
+    let enumValues: string[]
+
+    switch (enumType) {
+        case 'Fruits':
+            enumValues = Object.values(Fruits)
+            break;
+        case 'Vegetables':
+            enumValues = Object.values(Vegetables)
+            break;
+        case 'Cheese':
+            enumValues = Object.values(Cheese)
+            break;
+        default:
+            throw new Error('Invalid enum type')
+    }
+
+    return faker.helpers.arrayElement(enumValues)
+}
+
+function createRandomProduct(enumType: string): Product {
     const product: Product = {
-        title: faker.helpers.enumValue(Fruits),
+        title: getRandomEnumValue(enumType),
         description: faker.lorem.sentence(10),
         code: generateRandomString(6),
         price: parseFloat(faker.commerce.price()),
         status: true,
         stock: getRandomNumber(50),
-        category: 'Fruits',
-        thumbnails: [faker.image.url()]
+        category: enumType,
+        thumbnails: [faker.image.url()],
     }
     return product
 }
-
-export const PRODUCT_BOOTSTRAP: Product[] = faker.helpers.multiple(createRandomProduct, {
-    count: 40,
-})
 
 function getRandomNumber(max: number) {
     return Math.floor(Math.random() * max)
