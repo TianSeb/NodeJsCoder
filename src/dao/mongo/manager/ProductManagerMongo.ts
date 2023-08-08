@@ -4,6 +4,7 @@ import { PaginateResult, Aggregate } from 'mongoose'
 import { ProductModel } from "../models/Product"
 import { Product } from "../../../entities/IProduct"
 import { ProductDao } from "../../interfaces/ProductDao"
+import { logger } from "../../../utils/Logger"
 
 export default class ProductManagerMongo extends MongoDao<Product> implements ProductDao {
 
@@ -46,6 +47,7 @@ export default class ProductManagerMongo extends MongoDao<Product> implements Pr
         if (!product) {
             throw new createError.NotFound(`Product with id ${prodId} not found`)
         }
+        logger.info(`Product with id ${product}`)
         return product
     }
 

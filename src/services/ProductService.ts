@@ -5,7 +5,7 @@ import { Product } from '../entities/IProduct'
 import ProductResponseDTO from '../dao/mongo/dtos/product/Product.response'
 import { sendSocketMessage } from '../socket/SocketClient'
 import createError from 'http-errors'
-
+import { logger } from '../utils/Logger'
 export default class ProductService {
     private static instance: ProductService | null = null
     private productManager
@@ -27,9 +27,11 @@ export default class ProductService {
         try {
             const savedProduct = await this.productManager.addProduct(data)
             sendSocketMessage("productSaved", savedProduct)
+            logger.debug("Product saved")
             return savedProduct
 
         } catch (error: any) {
+            logger.error(`error adding product ${error.message}`)
             if (error instanceof mongoose.Error.ValidationError) {
                 throw new createError.BadRequest(error.message);
             } else if (error.code === 11000) {
@@ -49,6 +51,7 @@ export default class ProductService {
         if (product != null) {
             return product
         } else {
+            logger.debug(`product ${id} not found`)
             throw new createError.NotFound(`Product ${id} not found`);
         }
     }
@@ -105,6 +108,7 @@ export default class ProductService {
             },
           })
         }
+        logger.debug(`pipeline: ${JSON.stringify(pipeline)}`)
         return pipeline
     }
 }

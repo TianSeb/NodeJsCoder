@@ -3,6 +3,7 @@ import { readFileSync } from "fs"
 import path from "path"
 import dotenv from 'dotenv'
 import path from 'path'
+import { logger } from "../../utils/Logger"
 
 const rootPath = process.cwd()
 const ejs = require('ejs')
@@ -33,8 +34,8 @@ export async function sendOrderEmail(userEmail, totalPrice, products) {
     }
     
     const info = await transporter.sendMail(mailOptions)
-    console.log('Email Sent:', info.response)
+    logger.info('Email Sent:', userEmail)
   } catch (error) {
-    console.error('Error sending email:', error)
+    logger.error('Error sending email:', error)
   }
 }

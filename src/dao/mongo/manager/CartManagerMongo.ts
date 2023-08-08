@@ -6,6 +6,7 @@ import MongoDao from "../MongoDao"
 import createError from 'http-errors'
 import mongoose from "mongoose"
 import { ProductModel } from "../models/Product"
+import { logger } from "../../../utils/Logger"
 
 export default class CartManagerMongo extends MongoDao<Cart> implements CartDao {
 
@@ -37,7 +38,8 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
         productIndex > -1 ? cart.products[productIndex].quantity += 1 :
             cart.products.push({ id: productId, quantity: 1 })
 
-        await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
+        const updatedCart = await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
+        logger.info(`Product Saved in Cart: ${updatedCart}`)
     }
 
     async updateCart(cartId: string, data: any): Promise<Cart> {
@@ -51,10 +53,10 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
             } else {
                 cart.products.push(product)
             }
-
         })
 
         await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
+        logger.info(`Cart updated`)
         return cart
     }
 
@@ -63,6 +65,7 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
 
         cart.products[productIndex].quantity = data.quantity
         await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
+        logger.info(`Product ${productId} updated in Cart`)
         return cart
     }
 
@@ -84,17 +87,20 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
         if (deleted == 0) {
             throw new createError.BadRequest(`Cart not found`)
         }
+        logger.info(`Cart ${cartId} deleted`)
         return deleted
     }
 
     async deleteAll(): Promise<void> {
         await super.deleteAll()
+        logger.info(`Carts deleted`)
     }
 
     async deleteProductInCart(cartId: string, productId: string): Promise<void> {
         const { cart, productIndex } = await this.findProductInCart(cartId, productId)
         cart.products.splice(productIndex, 1)
         await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
+        logger.info(`Product: ${productId} deleted in Cart`)
     }
 
     async purchase(cartId: string, userEmail: string): Promise<Cart | any> {
@@ -109,7 +115,7 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
             const updateOperations = calculateOrder.updateOperations
             const productsForEmail = calculateOrder.productsForEmail
             let totalPrice = calculateOrder.totalPrice
-
+            
             const result = await ProductModel.bulkWrite(updateOperations, { session })
             if (result.modifiedCount !== cart.products.length) {
                 throw createError.NotAcceptable('Out of Stock')
@@ -120,7 +126,8 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
 
             await session.commitTransaction()
             session.endSession()
-            console.log(`Purchase completed successfully for cart ${cart.id}`)
+            
+            logger.info(`Purchase completed successfully for cart ${cart.id}`)
             return {
                 userEmail,
                 totalPrice,

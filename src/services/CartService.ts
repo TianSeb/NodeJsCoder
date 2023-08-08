@@ -2,6 +2,7 @@ import DaoFactory from '../dao/DaoFactory'
 import CartRepository from '../dao/mongo/repository/CartRepository'
 import { Cart } from '../entities/ICart'
 import { sendOrderEmail } from '../config/email/email'
+import { logger } from '../utils/Logger'
 
 export default class CartService {
     private static instance: CartService | null = null

@@ -3,6 +3,7 @@ import { Strategy as LocalStrategy } from "passport-local"
 import passport from "passport"
 import { User } from "../../entities/IUser"
 import UserService from "../../services/UserService"
+import { logger } from "../../utils/Logger"
 
 const userService = UserService.getInstance()
 
@@ -35,10 +36,12 @@ const loginStrategy = new LocalStrategy(strategyOptions, login)
 
 //saves user in req.session.passport
 passport.serializeUser((user: Partial<User>, done: any) => {
+    logger.debug('serializing user')
     done(null, user._id)
 })
 
 passport.deserializeUser(async (req:any, id: string, done: any) => {
+    logger.debug('deserializing user')
     const user = await userService.findUser({ _id: id })
     done(null, user)
 })
