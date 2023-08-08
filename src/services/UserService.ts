@@ -4,6 +4,7 @@ import { User } from '../entities/IUser'
 import { createHash } from '../utils/Utils'
 import { isValidPassword } from '../utils/Utils'
 import UserRepository from '../dao/mongo/repository/UserRepository'
+import { logger } from '../utils/Logger'
 
 export default class UserService {
 
@@ -50,6 +51,7 @@ export default class UserService {
         if (!userFound) throw new createError.Forbidden(`Wrong username or password`)
         const checkPassword = isValidPassword(password, userFound)
         if (!checkPassword) throw new createError.Forbidden(`Wrong username or password`)
+        logger.debug(`login user ${userFound.email}`)
         return userFound
     }
 

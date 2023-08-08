@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express"
 import createError from 'http-errors'
+import { logger } from "../utils/Logger"
 
 export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+  logger.debug("isAuthenticated")
   if (req.isAuthenticated()) {
     return next()
   }

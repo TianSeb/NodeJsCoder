@@ -4,6 +4,7 @@ import createError from 'http-errors'
 import { Ticket } from "../../../entities/ITicket"
 import MongoDao from "../MongoDao"
 import { TicketModel } from "../models/Ticket"
+import { logger } from "../../../utils/Logger"
 
 export default class TicketManagerMongo extends MongoDao<Ticket> {
 
@@ -21,10 +22,11 @@ export default class TicketManagerMongo extends MongoDao<Ticket> {
 
             const ticketInstance = new TicketModel(ticketData)
             const savedTicket = await ticketInstance.save()
-  
-            console.log(`Ticket Saved ${savedTicket}`)
+
+            logger.info(`Ticket Saved ${savedTicket}`)
             return savedTicket
         } catch (error: any) {
+            logger.error(`error creating ticket ${error.msg}`)
             throw createError.RequestTimeout("There was a problem while creating purchase ticket")
         }
     }
