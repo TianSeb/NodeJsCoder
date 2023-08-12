@@ -34,7 +34,7 @@ class Server {
         this.app.use(errorHandler)
         this.configureClusterEvents()
         this.httpServer = createServer(this.app)
-        this.port = process.env.PORT || "8001"
+        this.port = config.port || "8001"
         
     }
 
