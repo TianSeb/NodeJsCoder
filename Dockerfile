@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
+EXPOSE 8080
+
 ARG ENV_LOCAL
 
 ENV ENV_LOCAL=${ENV_LOCAL}
