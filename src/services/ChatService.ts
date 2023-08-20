@@ -1,4 +1,4 @@
-import DaoFactory from '../dao/DaoFactory'
+import DaoFactory from '../persistence/DaoFactory'
 import { ChatMessage } from '../entities/IChatMessage'
 
 export default class ChatService {

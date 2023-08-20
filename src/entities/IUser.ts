@@ -1,3 +1,4 @@
+import { Types } from "mongoose"
 export interface User {
     _id?: string
     firstName: string
@@ -5,6 +6,12 @@ export interface User {
     email: string
     password: string
     age: Number
-    role?: string
+    role?: UserRoles
     cart?: Types.ObjectId | string
 }
+
+export enum UserRoles {
+    ADMIN = 'admin',
+    USER = 'user',
+    PREMIUM = 'premium'
+  }

@@ -14,4 +14,4 @@ ARG ENV_LOCAL
 
 ENV ENV_LOCAL=${ENV_LOCAL}
 
-CMD ["npm", "run", "test"]
+CMD ["npm", "start"]

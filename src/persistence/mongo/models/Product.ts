@@ -3,6 +3,7 @@ import { Schema, model, Document, PaginateModel } from 'mongoose'
 import mongoosePaginate from 'mongoose-paginate-v2'
 import aggregatePaginate from "mongoose-aggregate-paginate-v2"
 import { Product } from "../../../entities/IProduct"
+import { UserRoles } from "../../../entities/IUser"
 
 
 export interface PaginatedProductModel extends PaginateModel<Product & Document> {}
@@ -15,6 +16,7 @@ export const ProductSchema: Schema = new Schema<Product>({
   status: { type: Boolean, required: true, default: true },
   stock: { type: Number, required: true },
   category: { type: String, required: true },
+  owner: { type: String, default: UserRoles.ADMIN},
   thumbnails: { type: [String], required: false },
 }, {
   versionKey: false

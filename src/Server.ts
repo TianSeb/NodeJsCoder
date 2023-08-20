@@ -35,18 +35,17 @@ class Server {
         this.configureClusterEvents()
         this.httpServer = createServer(this.app)
         this.port = config.port || "8001"
-        
     }
 
     start() {
         if (cluster.isPrimary) {
-            logger.info(`number of CPUs: ${this.numCPUs}`);
-            for (let i = 0; i < this.numCPUs; i++) {
-                cluster.fork();
+            logger.info(`number of CPUs: ${this.numCPUs}`)
+            for (let i = 0; i < 2; i++) {
+                cluster.fork()
             }
         } else {
             this.httpServer.listen(this.port, () => {
-                logger.info(`Server running on port ${this.port}, process: ${process.pid}`);
+                console.log(`Server running on port ${this.port}, process: ${process.pid}`)
             })
         }
     }

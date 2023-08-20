@@ -99,7 +99,7 @@ describe('Get Products Route', () => {
             prevPage: null,
         })
         await pipelineParams(req as CustomProductRequest, res, next)
-        await productController.getProducts(req as CustomProductRequest, res, next)
+        await productController.getProducts(req as CustomProductRequest, res)
 
         expect(res.statusCode).toBe(200)
         expect(res.body).toEqual({

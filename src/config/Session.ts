@@ -16,8 +16,8 @@ const cookiesConfig: any = {
 const fileStoreOptions = {
   store: new FileStore({
     path: './sessions',
-    ttl: 180,
-    reapInterval: 60
+    ttl: 380,
+    reapInterval: 120
   }),
   ...cookiesConfig
 }
@@ -26,7 +26,7 @@ if (!isTestEnvironment) {
   mongoStoreOptions = {
     store: new MongoStore({
       mongoUrl: config.mongoDatabaseUrl,
-      ttl: 180
+      ttl: 380
     }),
     ...cookiesConfig
   }

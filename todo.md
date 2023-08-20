@@ -1,18 +1,20 @@
-- Ruta Current ¿? (es la ruta del user revisar entrega anterior) []
-- Implementar en carts /:cid/purchase [x]
-  - finaliza proceso de compra del carrito [x]
-  - Corroborar stock al finalizar compra [x]
-  - Agregar mail del usuario al ticket de compra [x]
-  
-  - Finalizar este proceso genera un Ticket de compra [x]
-    - Crear clase Ticket y Schema [x]
-    Id (autogenerado por mongo)
-    code: String debe autogenerarse y ser único
-    purchase_datetime: Deberá guardar la fecha y hora exacta en la cual se formalizó la compra (básicamente es un created_at)
-    amount: Number, total de la compra.
-    purchaser: String, contendrá el correo del usuario asociado al carrito.
+- Validar creación de producto con usuario "Admin" || "Premium" [x] / [x]
 
-    - Al completar la compra, vaciar carro [x]
+- Modificar Schema Product
+  - Agregar campo owner: defecto "admin" sino mail de usuario "premium" (solo pueden crear esos dos) [x] / [x]
 
-  - Agregar repository y DTO para User [x]
-  - Agregar emailer para enviar template del purchase ticket []
+- Implementar nueva ruta /api/users/premium/:uid, la cual permite cambiar el rol de usuario "user" a "premium", y viceversa [x] / [x]
+
+- Usuario premium sólo puede borrar/actualizar productos creados por el. Validar con campo owner [x] / [x]
+
+- Validar que un usuario premium NO pueda agregar al carrito, productos creados por el [x] / [X]
+
+- middleware que valide que si el usuario es administrador en las rutas de crear, modificar y eliminar un producto.Simplemente seria agregar otro middleware despues del de password y obtener el campo role del usuario validando si el mismo es o no admin. [x] / []
+
+- El dto de productos debería tener el id [x] / [x]
+
+- Como único detalle, le agregaría al ticket el conjunto de productos para tener este resumen en la base de datos de alguna manera. [] / []
+
+- Refactor purchase [] / []
+
+- Sistema recuperación contraseña con link que expira en 1h [] / []

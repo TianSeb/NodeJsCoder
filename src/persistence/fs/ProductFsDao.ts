@@ -14,7 +14,7 @@ export default class ProductFsDao extends FsDao<Product> implements ProductDao {
     async addProduct(data: any) {
         let products = await super.getDatabase()
         let product: Product = new ProductModelFs(data)
-        product.id = uuidv4()
+        product._id = uuidv4()
         let productIndex = await super.objectCodeExists(product)
 
         if (productIndex < 0) {
@@ -62,7 +62,7 @@ export default class ProductFsDao extends FsDao<Product> implements ProductDao {
 
     async deleteProductById(id: any): Promise<number> {
         let products = await super.getDatabase()
-        let index = products.findIndex((product: Product) => product.id === id)
+        let index = products.findIndex((product: Product) => product._id === id)
 
         if (index > -1) {
             products.splice(index, 1)
@@ -89,7 +89,7 @@ export default class ProductFsDao extends FsDao<Product> implements ProductDao {
             let productToUpdate = response.docs[foundProductIndex]
             this.validateProductFields(productToUpdate, updatedFields)
 
-            let { id, ...rest } = updatedFields
+            let { _id, ...rest } = updatedFields
             let updatedProduct = { ...productToUpdate, ...rest }
 
             response.docs.splice(foundProductIndex, 1, updatedProduct)

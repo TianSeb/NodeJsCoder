@@ -12,7 +12,7 @@ const strategyOptions: any = {
 }
 
 const verifyToken: any = async (jwt_payload:any, done:any): Promise<any> => {
-    logger.debug('reading payload--->', jwt_payload)
+    logger.debug(`reading payload---> ${JSON.stringify(jwt_payload)}`)
     const user = await userService.findUser({ _id: jwt_payload.userId })
     if (!user) return done(null, false)
     return done(null, jwt_payload)
