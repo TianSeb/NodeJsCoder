@@ -7,8 +7,9 @@ import { createResponse } from "../utils/Utils"
 const mockRoute = Router()
 
 mockRoute.get('/mockingproducts',asyncHandler((req: Request, res: Response, next: NextFunction) => {
-  const { category, count } = req.body
-  createResponse(res, 201, generateRandomProducts(category, count))
+  const queryParams: [string, string] = [req.query.category as string, req.query.count as string];
+  const [category, count] = queryParams
+  createResponse(res, 201, generateRandomProducts(category, Number(count)))
 }))
 
 export default mockRoute
