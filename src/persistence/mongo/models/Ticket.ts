@@ -6,6 +6,12 @@ const TicketSchema: Schema = new Schema<Ticket>({
   purchase_datetime: { type: Date, required: false, default: Date.now },
   amount: { type: Number, required: true },
   purchaser: { type: String, required: true, index: true },
+  products: [{
+    name: { type: String, required: true },
+    qty: { type: Number, required: true },
+    price: { type: Number, required: true },
+    total: { type: Number, required: true }
+  }]
 }, { versionKey: false })
 
 TicketSchema.methods.toJSON = function () {

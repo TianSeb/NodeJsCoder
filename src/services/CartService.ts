@@ -49,8 +49,10 @@ export default class CartService {
 
     async purchaseTicket(cartId: string, userEmail: string): Promise<any> {
         const response = await this.cartManager.purchase(cartId, userEmail)
-        const ticket = await this.ticketManager.createTicket(response.totalPrice, userEmail)
-        await sendOrderEmail(userEmail, response.totalPrice, response.productsForEmail)
+        const productsForEmail = response.products
+        const totalPrice = response.totalPrice
+        const ticket = await this.ticketManager.createTicket(totalPrice, userEmail, productsForEmail)
+        await sendOrderEmail(userEmail, totalPrice, productsForEmail)
         return ticket
     }
 
