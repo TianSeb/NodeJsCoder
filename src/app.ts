@@ -1,5 +1,5 @@
 import Server from './Server'
-import { initDbConnection } from './dao/DbConnection'
+import { initDbConnection } from './persistence/DbConnection'
 import { SocketServer } from './socket/SocketServer'
 
 const server: Server = new Server()

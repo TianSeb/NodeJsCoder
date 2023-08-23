@@ -15,17 +15,18 @@ export default class ProductRepository {
   }
 
   static getInstance(): ProductRepository {
-      if (!ProductRepository.instance) {
-        ProductRepository.instance = new ProductRepository()
-      }
-      return ProductRepository.instance
+    if (!ProductRepository.instance) {
+      ProductRepository.instance = new ProductRepository()
+    }
+    return ProductRepository.instance
   }
 
-  async getProducts(pipeline?:any, options?:any): Promise<PaginateResult<Product> | any> {
+  async getProducts(pipeline?: any, options?: any): Promise<PaginateResult<Product> | any> {
     const result = await this.productManager.getProducts(pipeline, options)
     if (result) {
       const newResult = result
-      const productsDto: any[] = newResult.docs.map((product: Partial<Product>) => new ProductResponseDTO(product))
+      const productsDto: any[] = newResult.docs
+        .map((product: Partial<Product>) => new ProductResponseDTO(product))
       newResult.docs = productsDto
       return newResult
     }
@@ -45,5 +46,5 @@ export default class ProductRepository {
     const prodDto = new ProductRegisterDTO(data)
     const response = await this.productManager.addProduct(prodDto)
     return response
-  } 
+  }
 }

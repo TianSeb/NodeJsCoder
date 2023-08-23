@@ -1,5 +1,5 @@
 export interface Product {
-    id?: string
+    _id?: string
     title: string
     description: string
     code: string
@@ -7,5 +7,6 @@ export interface Product {
     status?: boolean
     stock: number
     category: string
+    owner?: string
     thumbnails: string[]
 }

@@ -1,10 +1,12 @@
-import DaoFactory from '../dao/DaoFactory'
+import DaoFactory from '../persistence/DaoFactory'
+import UserRepository from '../persistence/mongo/repository/UserRepository'
 import createError from 'http-errors'
 import { User } from '../entities/IUser'
 import { createHash } from '../utils/Utils'
 import { isValidPassword } from '../utils/Utils'
-import UserRepository from '../dao/mongo/repository/UserRepository'
 import { logger } from '../utils/Logger'
+import { UserRoles } from '../entities/IUser'
+import { UserModel } from '../persistence/mongo/models/User'
 
 export default class UserService {
 
@@ -34,14 +36,14 @@ export default class UserService {
             return await this.userManager.createUser({
                 ...user,
                 password: createHash(password),
-                role: 'admin'
+                role: UserRoles.ADMIN
             })
         }
 
         return await this.userManager.createUser({
             ...user,
             password: createHash(password),
-            role: 'user'
+            role: UserRoles.USER
         })
     }
 
@@ -57,6 +59,29 @@ export default class UserService {
 
     async findUser(filter: any): Promise<User | null> {
         return await this.userManager.findUser(filter)
+    }
+
+    async changeUserRole(userId: string): Promise<void> {
+        const userRole = await this.getUserRole(userId)
+        let updatedRole = (userRole === UserRoles.PREMIUM) ? UserRoles.USER : UserRoles.PREMIUM
+        logger.debug(`changing role: ${userRole} to: ${updatedRole}`)
+
+        await this.userManager.updateUserRole(userId, updatedRole)
+    }
+
+    private async getUserRole(userId: string) {
+        const allowedRoles = [UserRoles.PREMIUM, UserRoles.USER]
+
+        const user = await UserModel.findById(userId)
+        if (!user) throw new createError.NotFound(`User Not Found`)
+
+        const userRole = user.role
+        if (!userRole) throw new createError.NotFound(`User Not Found`)
+
+        if (!allowedRoles.includes(userRole)) {
+            throw new createError.Forbidden(`Wrong username or password`)
+        }
+        return userRole
     }
 
     private isAdmin(email: string, password: string): boolean {

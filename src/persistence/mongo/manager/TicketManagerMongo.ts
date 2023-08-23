@@ -12,12 +12,13 @@ export default class TicketManagerMongo extends MongoDao<Ticket> {
         super(TicketModel)
     }
 
-    async createTicket(amount: Number, userEmail: string): Promise<Ticket> {
+    async createTicket(amount: Number, userEmail: string, products: any): Promise<Ticket> {
         try {
             const ticketData = {
                 code: uuidv4(),
                 amount: amount,
                 purchaser: userEmail,
+                products: products
             }
 
             const ticketInstance = new TicketModel(ticketData)

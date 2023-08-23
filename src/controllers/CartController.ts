@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express"
 import CartService from "../services/CartService"
+import { getUserRole } from "../utils/Utils"
 import { createResponse } from "../utils/Utils"
-import UserResponseDTO from "../dao/mongo/dtos/user/User.Response"
+import UserResponseDTO from "../persistence/mongo/dtos/user/User.Response"
 
 const cartService = CartService.getInstance()
 
@@ -20,7 +21,9 @@ export default class CartController {
     }
 
     async updateProductInCart(req: Request, res: Response, next: NextFunction): Promise<any> {
-        createResponse(res, 200, await cartService.updateProductInCart(req.params.cid, req.params.pid, req.body))
+        const userRole = getUserRole(req)
+        createResponse(res, 200, await cartService
+            .updateProductInCart(req.params.cid, req.params.pid, req.body, userRole))
     }
 
     async createCart(req: Request, res: Response, next: NextFunction): Promise<any> {
@@ -28,7 +31,9 @@ export default class CartController {
     }
 
     async saveProductToCart(req: Request, res: Response, next: NextFunction): Promise<any> {
-        createResponse(res, 201, await cartService.saveProductToCart(req.params.cid, req.params.pid))
+        const userRole = getUserRole(req)
+        createResponse(res, 201, await cartService
+            .saveProductToCart(req.params.cid, req.params.pid, userRole))
     }
 
     async purchaseTicket(req: Request, res: Response, next: NextFunction): Promise<any> {

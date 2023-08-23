@@ -111,10 +111,10 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
             const cart = await CartModel.findById(cartId).populate('products.id')
             if (!cart) throw new createError.BadRequest(`Cart not found`)
 
-            const calculateOrder = this.calculatePurchaseOrder(cart)
-            const updateOperations = calculateOrder.updateOperations
-            const productsForEmail = calculateOrder.productsForEmail
-            let totalPrice = calculateOrder.totalPrice
+            const purchaseOrder = this.calculatePurchaseOrder(cart)
+            const updateOperations = purchaseOrder.updateOperations
+            const productsForEmail = purchaseOrder.productsForEmail
+            const totalPrice = purchaseOrder.totalPrice
             
             const result = await ProductModel.bulkWrite(updateOperations, { session })
             if (result.modifiedCount !== cart.products.length) {

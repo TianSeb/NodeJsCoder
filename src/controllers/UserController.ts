@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express"
 import UserService from "../services/UserService"
 import { generateToken } from "../config/jwt/JwtAuth"
 import { createResponse } from "../utils/Utils"
+import { getUserRole } from "../utils/Utils"
 
 const userService = UserService.getInstance()
 
@@ -42,5 +43,9 @@ export default class UserController {
             status: 'OK',
             user: req.user,
         })
+    }
+
+    async changeUserRole(req: Request, res: Response, next: NextFunction): Promise<any> {
+        createResponse(res, 200, await userService.changeUserRole(req.params.uid))
     }
 }
