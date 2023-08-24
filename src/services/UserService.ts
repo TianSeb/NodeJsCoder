@@ -3,7 +3,9 @@ import UserRepository from '../persistence/mongo/repository/UserRepository'
 import createError from 'http-errors'
 import { User } from '../entities/IUser'
 import { createHash } from '../utils/Utils'
+import { generateToken } from "../config/jwt/JwtAuth"
 import { isValidPassword } from '../utils/Utils'
+import { sendResetPassword } from "../config/email/email"
 import { logger } from '../utils/Logger'
 import { UserRoles } from '../entities/IUser'
 import { UserModel } from '../persistence/mongo/models/User'
@@ -13,6 +15,8 @@ export default class UserService {
     private static instance: UserService | null = null
     private userManager
     private userRepository
+    private LOGIN_TIME = '30m'
+    private RESET_TIME = '30m' 
 
     constructor() {
         this.userManager = DaoFactory.getUserManagerInstance()
@@ -27,7 +31,7 @@ export default class UserService {
     }
 
     async createUser(user: User): Promise<Partial<User>> {
-        const { email, password } = user
+        const { firstName, lastName, email, age, password } = user  
         const userExist = await this.userManager.findUser({ email })
         if (userExist) throw new createError
             .BadRequest(`User with email ${email} already exists`)
@@ -47,18 +51,23 @@ export default class UserService {
         })
     }
 
-    async loginUser(data: any): Promise<User> {
+    async loginUser(data: any): Promise<string | null> {
         const { email, password } = data
         const userFound = await this.userManager.findUser({ email })
         if (!userFound) throw new createError.Forbidden(`Wrong username or password`)
         const checkPassword = isValidPassword(password, userFound)
         if (!checkPassword) throw new createError.Forbidden(`Wrong username or password`)
+        const access_token = generateToken(userFound, this.LOGIN_TIME)
+
         logger.debug(`login user ${userFound.email}`)
-        return userFound
+        
+        return access_token !== null ? access_token : null
     }
 
     async findUser(filter: any): Promise<User | null> {
-        return await this.userManager.findUser(filter)
+        const userFound = await this.userManager.findUser(filter)
+        if (!userFound) throw new createError.Forbidden(`Wrong username or password`)
+        return userFound
     }
 
     async changeUserRole(userId: string): Promise<void> {
@@ -67,6 +76,23 @@ export default class UserService {
         logger.debug(`changing role: ${userRole} to: ${updatedRole}`)
 
         await this.userManager.updateUserRole(userId, updatedRole)
+    }
+
+    async resetPassword(userEmail: string): Promise<string> {
+        const user = await this.userManager.findUser({ userEmail })
+        if (!user) throw new createError.Forbidden(`Wrong username or password`)
+
+        const access_token = generateToken(user, this.RESET_TIME)
+        await sendResetPassword(user.email, access_token)
+        return access_token
+    }
+
+    async updatePassword(userEmail: string, password: string): Promise<void> {
+        const checkPassword = isValidPassword(password, userEmail)
+        if (checkPassword) throw new createError
+            .Forbidden(`Password should be different from last password`)
+        const newPass = createHash(password)
+        await this.userManager.updateUserPassword(userEmail, newPass)
     }
 
     private async getUserRole(userId: string) {

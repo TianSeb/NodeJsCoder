@@ -7,9 +7,10 @@ import UserController from "../controllers/UserController"
 const usersRoute = Router()
 const userController = new UserController()
 
-usersRoute.post('/register', asyncHandler(userController.registerJwt))
+usersRoute.post('/register', asyncHandler(userController.registerUserJwt))
           .post('/login', asyncHandler(userController.loginJwt))
           .post('/logout', asyncHandler(userController.logout))
+          .post('/reset/:uem', asyncHandler(userController.resetPass))
           .put('/premium/:uid',passport.authenticate('jwt'), isAuthenticated, asyncHandler(userController.changeUserRole))
           .get('/session', asyncHandler(userController.createSession))
           .get('/jwt-test', passport.authenticate('jwt'), asyncHandler(userController.privateJwt))

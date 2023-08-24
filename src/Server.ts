@@ -10,6 +10,7 @@ import errorHandler from './config/ErrorConfig'
 import session from 'express-session'
 import passport from 'passport'
 import { initializeJwtPassport } from './config/passport/Jwt'
+import helmet from 'helmet'
 import { logger } from './utils/Logger'
 
 class Server {
@@ -30,6 +31,7 @@ class Server {
         this.app.use(passport.initialize())
         this.app.use(passport.session())
         initializeJwtPassport()
+        this.app.use(helmet())
         this.app.use(routes)
         this.app.use(errorHandler)
         this.configureClusterEvents()
@@ -38,9 +40,15 @@ class Server {
     }
 
     start() {
+        this.httpServer.listen(this.port, () => {
+            console.log(`Server running on port ${this.port}`);
+        })
+    }
+
+    startWithClusters() {
         if (cluster.isPrimary) {
             logger.info(`number of CPUs: ${this.numCPUs}`)
-            for (let i = 0; i < 2; i++) {
+            for (let i = 0; i < this.numCPUs; i++) {
                 cluster.fork()
             }
         } else {
