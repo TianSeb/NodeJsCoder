@@ -78,21 +78,22 @@ export default class UserService {
         await this.userManager.updateUserRole(userId, updatedRole)
     }
 
-    async resetPassword(userEmail: string): Promise<string> {
-        const user = await this.userManager.findUser({ userEmail })
-        if (!user) throw new createError.Forbidden(`Wrong username or password`)
-
+    async resetPassword(email: string): Promise<string> {
+        const user = await this.userManager.findUser({ email })
+        if (!user) throw new createError.Forbidden(`Wrong username`)
         const access_token = generateToken(user, this.RESET_TIME)
+
         await sendResetPassword(user.email, access_token)
         return access_token
     }
 
-    async updatePassword(userEmail: string, password: string): Promise<void> {
-        const checkPassword = isValidPassword(password, userEmail)
+    async updatePassword(email: string, password: string): Promise<void> {
+        const userFound = await this.userManager.findUser({ email })
+        const checkPassword = isValidPassword(password, userFound)
         if (checkPassword) throw new createError
             .Forbidden(`Password should be different from last password`)
         const newPass = createHash(password)
-        await this.userManager.updateUserPassword(userEmail, newPass)
+        await this.userManager.updateUserPassword(email, newPass)
     }
 
     private async getUserRole(userId: string) {

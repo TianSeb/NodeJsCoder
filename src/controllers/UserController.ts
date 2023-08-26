@@ -4,10 +4,9 @@ import { createResponse } from "../utils/Utils"
 import { logger } from "../utils/Logger"
 
 const userService = UserService.getInstance()
+const RESET_TOKEN: string = 'TOKENPASS'
 
 export default class UserController {
-
-    private RESET_TOKEN = 'TOKENPASS'
 
     async registerUserJwt(req: Request, res: Response): Promise<any> {
         const newUser = await userService.createUser(req.body)
@@ -17,12 +16,12 @@ export default class UserController {
     }
 
     async loginJwt(req: Request, res: Response): Promise<any> {
-        const access_token = await userService.loginUser(req.body)
-        if (access_token) {
-            res.header('AUTH_TOKEN', access_token)
-            createResponse(res, 201, { msg: 'Login OK', access_token })
+        const access_token:any = await userService.loginUser(req.body)
+        if (!access_token) {
+            createResponse(res, 404, { msg: 'Not Found' })
         }
-        createResponse(res, 404, { msg: 'Not Found' })
+        res.header('AUTH_TOKEN', access_token)
+        createResponse(res, 201, { msg: 'Login OK', access_token })
     }
 
     async logout(req: Request, res: Response): Promise<any> {
@@ -48,25 +47,29 @@ export default class UserController {
     }
 
     async resetPass(req: Request, res: Response): Promise<any> {
-        const userEmail = req.params.uem
-        const token = await userService.resetPassword(userEmail)
-        if (token) {
-            res.cookie(this.RESET_TOKEN, token)
-            createResponse(res, 200, { msg: 'email reset password sent' })
-            logger.debug('reset password email sent')
+        const user:any = req.user
+        const token = await userService.resetPassword(user.email)
+        if (!token) {
+            createResponse(res, 404, { msg: 'Not Found' })
+            logger.debug(`error reseting password for ${user.email}`)
+            return
         }
-        createResponse(res, 404, { msg: 'Not Found' })
-        logger.debug(`error reseting password for ${userEmail}`)
+        res.cookie(RESET_TOKEN, token)
+        createResponse(res, 200, { msg: 'reset password email sent' })
+        logger.debug(`reset password --> email sent ${user.email}`)
     }
 
     async updatePass(req: Request, res: Response): Promise<any> {
-        const userEmail = req.params.uem
-        const { pass } = req.body
-        const { tokenpass } = req.cookies
+        const user:any = req.user
+        const { password } = req.body
+        const { TOKENPASS } = req.cookies
 
-        if(!tokenpass) createResponse(res, 403, { msg: 'Token Not Found' })
-        await userService.updatePassword(userEmail, pass)
-        res.clearCookie(this.RESET_TOKEN)
+        if(!TOKENPASS) {
+            createResponse(res, 403, { msg: 'Token Not Found' })
+            return
+        }
+        await userService.updatePassword(user.email, password)
+        res.clearCookie(RESET_TOKEN)
         createResponse(res, 201, { msg: 'Password updated' })
     }
 }

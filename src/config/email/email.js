@@ -28,7 +28,7 @@ export async function sendOrderEmail(userEmail, totalPrice, products) {
 
     const mailOptions = {
       from: process.env.EMAIL,
-      to: userEmail,
+      to: process.env.EMAIL,
       subject: 'Purchase Order',
       html: html,
     }
@@ -46,13 +46,13 @@ export async function sendResetPassword(userEmail, hashCode) {
 
     const mailOptions = {
       from: process.env.EMAIL,
-      to: userEmail,
+      to: process.env.EMAIL,
       subject: 'Password Reset',
       html: html,
     }
-    await transporter.sendMail(mailOptions)
-    logger.info('Email Sent:', userEmail)
+    //await transporter.sendMail(mailOptions)
+    logger.info(`Email Sent: ${userEmail}`)
   } catch (error) {
-    logger.error('Error sending email:', error)
+    logger.error(`Error sending email: ${error.msg}`)
   }
 }
