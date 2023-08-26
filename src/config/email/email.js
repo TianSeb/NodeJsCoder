@@ -50,7 +50,7 @@ export async function sendResetPassword(userEmail, hashCode) {
       subject: 'Password Reset',
       html: html,
     }
-    //await transporter.sendMail(mailOptions)
+    await transporter.sendMail(mailOptions)
     logger.info(`Email Sent: ${userEmail}`)
   } catch (error) {
     logger.error(`Error sending email: ${error.msg}`)
