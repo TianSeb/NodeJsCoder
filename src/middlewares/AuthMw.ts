@@ -25,5 +25,5 @@ export const validateUserRole = (req: Request, res: Response, next: NextFunction
       return next()
     }
   }
-  return next(createError(403, 'Not Authorized'))
+  return next(createError(403, 'User Role Not Authorized'))
 }

@@ -12,8 +12,6 @@ import passport from 'passport'
 import { initializeJwtPassport } from './config/passport/Jwt'
 import helmet from 'helmet'
 import { logger } from './utils/Logger'
-import swaggerUI from 'swagger-ui-express'
-import swaggerJSDoc from 'swagger-jsdoc'
 
 class Server {
 
@@ -24,8 +22,6 @@ class Server {
 
     constructor() {
         this.app = express()
-        this.app.use('/docs', swaggerUI.serve, 
-                swaggerUI.setup(swaggerJSDoc()))
         this.app.use(helmet())
         this.app.set('view engine', 'ejs')
         this.app.use(express.json())

@@ -1,0 +1,233 @@
+paths:
+  /api/carts:
+    get:
+      tags:
+        - Carritos
+      summary: Lista de carritos
+      responses:
+        200:
+          description: Lista de carritos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartList'
+        500:
+          description: Error de servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - Carritos
+      summary: Crear un nuevo carrito
+      responses:
+        201:
+          description: Carrito creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        500:
+          description: Error de servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/carts/{cid}:
+    get:
+      tags:
+        - Carritos
+      summary: Obtener un carrito por ID
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del carrito a obtener
+          schema:
+            type: string
+      responses:
+        200:
+          description: Carrito encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartWithProducts'
+        404:
+          description: Carrito no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - Carritos
+      summary: Actualizar cantidad de productos en un carrito
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del carrito a actualizar
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartUpdate'
+        required: true
+      responses:
+        200:
+          description: Carrito actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartList'
+        404:
+          description: Carrito no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - Carritos
+      summary: Eliminar un carrito por ID
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del carrito a eliminar
+          schema:
+            type: string
+      responses:
+        200:
+          description: Carrito eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        404:
+          description: Carrito no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/carts/{cid}/product/{pid}:
+    put:
+      tags:
+        - Carritos
+      summary: Actualizar un producto en un carrito
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+        - in: path
+          name: pid
+          required: true
+          description: ID del producto en el carrito
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/ProductR'
+                - type: object
+                  properties:
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    price:
+                      type: number
+                    status:
+                      type: boolean
+                    stock:
+                      type: integer
+                    category:
+                      type: string
+                    thumbnails:
+                      type: array
+                      items:
+                        type: string
+            required: true
+      responses:
+        200:
+          description: Producto en el carrito actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartList'
+        404:
+          description: Carrito o producto no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - Carritos
+      summary: Eliminar un producto de un carrito
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+        - in: path
+          name: pid
+          required: true
+          description: ID del producto en el carrito
+          schema:
+            type: string
+      responses:
+        200:
+          description: Producto eliminado del carrito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        404:
+          description: Carrito o producto no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/carts/{cid}/purchase:
+    post:
+      tags:
+        - Carritos
+      summary: Realizar una compra desde el carrito
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del carrito a comprar
+          schema:
+            type: string
+      responses:
+        201:
+          description: Compra realizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseResponse'
+        404:
+          description: Carrito no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'

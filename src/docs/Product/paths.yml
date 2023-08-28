@@ -1,0 +1,172 @@
+paths:
+  /api/products:
+    get:
+      tags:
+        - Productos
+      summary: Lista de productos en la base de datos
+      parameters:
+        - in: query
+          name: page
+          description: Número de página para paginación (predeterminado 1)
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          description: Número de elementos por página (predeterminado 10)
+          schema:
+            type: integer
+            default: 10
+        - in: query
+          name: category
+          description: Filtrar por categoría de producto (opcional)
+          schema:
+            type: string
+        - in: query
+          name: status
+          description: Filtrar por estado del producto (opcional)
+          schema:
+            type: boolean
+        - in: query
+          name: sort
+          description: Ordenar resultados por precio (1 para ascendente, -1 para descendente)
+          schema:
+            type: integer
+            enum: [1, -1]
+      responses:
+        200:
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductList'
+        500:
+          description: Error de servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      tags:
+        - Productos
+      summary: Crear Producto
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductR'
+        required: true
+      responses:
+        200:
+          description: Producto actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        404:
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/products/{id}:
+    get:
+      tags:
+        - Productos
+      summary: Obtener un producto por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del producto a obtener
+          schema:
+            type: string
+      responses:
+        200:
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        404:
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - Productos
+      summary: Actualizar un producto por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del producto a actualizar
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/ProductR'
+                - type: object
+                  properties:
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    price:
+                      type: number
+                    status:
+                      type: boolean
+                    stock:
+                      type: integer
+                    category:
+                      type: string
+                    thumbnails:
+                      type: array
+                      items:
+                        type: string
+        required: true
+      responses:
+        200:
+          description: Producto actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        404:
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - Productos
+      summary: Eliminar un producto por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID del producto a eliminar
+          schema:
+            type: string
+      responses:
+        200:
+          description: Producto eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        404:
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'

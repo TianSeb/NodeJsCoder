@@ -1,0 +1,23 @@
+ components:
+    schemas:
+      ProductR:
+        type: object
+        properties:
+          title:
+            type: string
+          description:
+            type: string
+          code:
+            type: string
+          price:
+            type: number
+          status:
+            type: boolean
+          stock:
+            type: integer
+          category:
+            type: string
+          thumbnails:
+            type: array
+            items:
+              type: string
