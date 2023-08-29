@@ -27,4 +27,9 @@ export default class UserManagerMongo extends MongoDao<User> implements UserDao 
         const updatedRole = updatedUser !== null ? updatedUser.role : undefined
         logger.debug(`User role updated to: ${updatedRole}`)
     }
+
+    async updateUserPassword(userEmail: string, newPass: string): Promise<void> {
+        await UserModel.findOneAndUpdate({ email: userEmail }, { password: newPass}, { new: true })
+        logger.debug(`User password updated for user: ${userEmail}`)
+    }
 }

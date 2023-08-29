@@ -32,10 +32,27 @@ export async function sendOrderEmail(userEmail, totalPrice, products) {
       subject: 'Purchase Order',
       html: html,
     }
-    
-    const info = await transporter.sendMail(mailOptions)
+    await transporter.sendMail(mailOptions)
     logger.info('Email Sent:', userEmail)
   } catch (error) {
     logger.error('Error sending email:', error)
+  }
+}
+
+export async function sendResetPassword(userEmail, hashCode) {
+  try {
+    const templateFile = readFileSync(path.join(__dirname, 'reset_password.ejs'), 'utf-8')
+    const html = ejs.render(templateFile, { userEmail, hashCode })
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: process.env.EMAIL,
+      subject: 'Password Reset',
+      html: html,
+    }
+    await transporter.sendMail(mailOptions)
+    logger.info(`Email Sent: ${userEmail}`)
+  } catch (error) {
+    logger.error(`Error sending email: ${error.msg}`)
   }
 }

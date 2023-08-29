@@ -1,0 +1,9 @@
+ components:
+    schemas:
+      CartUpdate:
+        type: object
+        properties:
+          id (product): 
+            type: string
+          quantity:
+            type: number

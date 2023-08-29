@@ -1,0 +1,158 @@
+components:
+  schemas:
+    Carts:
+      type: object
+      properties:
+        totalPrice:
+          type: number
+          description: El precio total del carrito.
+        _id:
+          type: string
+          description: El ID único del carrito.
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: El ID del producto en el carrito.
+              quantity:
+                type: integer
+                description: La cantidad de ese producto en el carrito.
+      example:
+        totalPrice: 0
+        _id: "exampleId"
+        products:
+          - id: "exampleId"
+            quantity: 5
+
+    CartList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Carts'
+    
+    CartWithProducts:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            totalPrice:
+              type: number
+              description: El precio total del carrito.
+            _id:
+              type: string
+              description: El ID único del carrito.
+            products:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: object
+                    properties:
+                      owner:
+                        type: string
+                      _id:
+                        type: string
+                      title:
+                        type: string
+                      description:
+                        type: string
+                      code:
+                        type: string
+                      price:
+                        type: number
+                      status:
+                        type: boolean
+                      stock:
+                        type: integer
+                      category:
+                        type: string
+                      thumbnails:
+                        type: array
+                        items:
+                          type: string
+                  quantity:
+                    type: integer
+          example:
+            data:
+              totalPrice: 0
+              _id: "exampleId"
+              products:
+                - id:
+                    owner: "exampleOwner"
+                    _id: "exampleId"
+                    title: "camembert"
+                    description: "Amet dolore inventore possimus sequi aut eligendi neque cupiditate consequuntur."
+                    code: "ExampleCode"
+                    price: 486
+                    status: false
+                    stock: 76
+                    category: "Cheese"
+                    thumbnails:
+                      - "https://picsum.photos/seed/Vupua0Nm/640/480"
+                  quantity: 5
+
+    PurchaseResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: El código único de la compra.
+        purchase_datetime:
+          type: string
+          format: date-time
+          description: La fecha y hora de la compra.
+        amount:
+          type: number
+          description: El monto total de la compra.
+        purchaser:
+          type: string
+          description: El nombre del comprador.
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: El nombre del producto.
+              qty:
+                type: number
+                description: La cantidad comprada del producto.
+              price:
+                type: number
+                description: El precio unitario del producto.
+              total:
+                type: number
+                description: El total para ese producto (cantidad x precio unitario).
+          example:
+            code: "ABC123"
+            purchase_datetime: "2023-08-30T10:15:00Z"
+            amount: 100.0
+            purchaser: "John Doe"
+            products:
+              - name: "Producto 1"
+                qty: 3
+                price: 10.0
+                total: 30.0
+              - name: "Producto 2"
+                qty: 2
+                price: 25.0
+                total: 50.0
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensaje de error
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensaje de éxito

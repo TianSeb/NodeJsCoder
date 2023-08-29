@@ -4,7 +4,7 @@ import { User } from "../../entities/IUser"
 
 const PRIVATE_KEY = config.jwtSecret
 
-export const generateToken = (user: Partial<User>) => {
+export const generateToken = (user: Partial<User>, timeExp: string) => {
     const payload = {
         userId: user._id,
         firstName: user.firstName,
@@ -16,7 +16,7 @@ export const generateToken = (user: Partial<User>) => {
     }
 
     const token = jwt.sign(payload, PRIVATE_KEY, {
-        expiresIn: '30m'
+        expiresIn: timeExp
     })
     return token
 }
