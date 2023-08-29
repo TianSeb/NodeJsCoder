@@ -64,6 +64,7 @@ const prodConfig = {
       level: 'error'
     })
   ],
+  silent: process.env.NODE_ENV === 'test',
 }
 
 const logConfig: any = config.environment === 'production' ? prodConfig : devConfig
