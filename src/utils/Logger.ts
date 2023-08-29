@@ -2,7 +2,7 @@ import { createLogger, transports, format, config as wconfig, Logger, LeveledLog
 import 'winston-mongodb'
 import config from '../config/Config'
 
-const { combine, printf, timestamp, colorize } = format
+const { combine, printf, timestamp, colorize, errors, json, align } = format
 
 const myCustomLevels: wconfig.AbstractConfigSetLevels = {
   fatal: 0,
@@ -28,13 +28,14 @@ interface CustomLevels extends Logger {
   debug: LeveledLogMethod
 }
 
-const logConfig = {
+const devConfig = {
   levels: myCustomLevels,
-  level: config.environment === 'production' ? 'error' : 'debug',
+  level: 'debug',
   format: combine(
     timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     printf((info: any) => `${info.level} | ${[info.timestamp]} | ${info.message}`),
-    colorize({ all: true})
+    errors({ stack: true }),
+    colorize({ all: true}),
   ),
   transports: [
     new transports.Console(),
@@ -46,16 +47,26 @@ const logConfig = {
   silent: process.env.NODE_ENV === 'test',
 }
 
-if (config.environment === 'production') {
-  const mongoTransport: any = new transports.MongoDB({
-    options: { useUnifiedTopology: true },
-    db: config.mongoDatabaseUrl || '',
-    collection: 'logs',
-    tryReconnect: true,
-    level: 'error'
-  })
-  logConfig.transports.push(mongoTransport)
+const prodConfig = {
+  levels: myCustomLevels,
+  level: 'error',
+  format: combine(timestamp(), errors({ stack: true }), json()),
+  transports: [
+    new transports.MongoDB({
+      options: { useUnifiedTopology: true },
+      db: config.mongoDatabaseUrl || '',
+      collection: 'logs',
+      tryReconnect: true,
+      level: 'error'
+    }),
+    new transports.File({
+      filename: './logs/app.log',
+      level: 'error'
+    })
+  ],
 }
 
+const logConfig: any = config.environment === 'production' ? prodConfig : devConfig
 addColors(myCustomColors)
+
 export const logger: CustomLevels =  <CustomLevels> createLogger(logConfig)
