@@ -10,8 +10,10 @@ describe('createTicket', () => {
         const amount = 100
         const userEmail = 'test@example.com'
         const products = [{
-            "title": "test",
-            "price": 200
+            "name": "test",
+            "price": 200,
+            "total": 400,
+            "qty": 2
         }]
         TicketModel.prototype.save.mockResolvedValueOnce({
             code: "23423422",

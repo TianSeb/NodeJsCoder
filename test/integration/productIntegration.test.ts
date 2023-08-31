@@ -1,21 +1,11 @@
 import Server from '../../src/Server'
 import { initDbConnection } from '../../src/persistence/DbConnection'
 import UserService from '../../src/services/UserService'
-import request from 'supertest'
+import request from "supertest"
 
 const server: Server = new Server()
 const userService: UserService = UserService.getInstance()
 let token: any
-const bananaProduct = {
-    "title": "banana",
-    "description": "Test Product",
-    "code": "abc123",
-    "price": 200,
-    "status": true,
-    "stock": 25,
-    "category": "Fruits",
-    "thumbnails": ["Sin imagen"]
-}
 
 beforeAll(async () => {
     await initDbConnection()
@@ -67,6 +57,13 @@ describe('/api/products', () => {
     })
 })
 
-afterAll(async () => {
-    
-})
+const bananaProduct = {
+    "title": "banana",
+    "description": "Test Product",
+    "code": "abc123",
+    "price": 200,
+    "status": true,
+    "stock": 25,
+    "category": "Fruits",
+    "thumbnails": ["Sin imagen"]
+}
