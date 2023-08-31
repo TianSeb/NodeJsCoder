@@ -32,7 +32,7 @@ export default class ProductController {
     }
 
     async getProductById(req: CustomProductRequest, res: Response): Promise<any> {
-        createResponse(res, 201, await productService
+        createResponse(res, 200, await productService
             .getProductById(req.params.pid))
     }
 

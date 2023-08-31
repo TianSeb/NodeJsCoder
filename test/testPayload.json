@@ -7,7 +7,7 @@
         "status": true,
         "stock": 25,
         "category": "frutas",
-        "thumbnail": ["Sin imagen"]
+        "thumbnails": ["Sin imagen"]
     },
     {
         "title": "manzana",
@@ -17,7 +17,7 @@
         "status": true,
         "stock": 32,
         "category": "frutas",
-        "thumbnail": ["Sin imagen"]
+        "thumbnails": ["Sin imagen"]
     },
     {
         "title": "naranja",
@@ -27,6 +27,6 @@
         "status": true,
         "stock": 12,
         "category": "frutas",
-        "thumbnail": ["Sin imagen"]
+        "thumbnails": ["Sin imagen"]
     }
 ]
