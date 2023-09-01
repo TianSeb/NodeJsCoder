@@ -34,6 +34,14 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Debug Secrets
+        run: |
+          echo "NODE_ENV: $NODE_ENV"
+          echo "PORT: $PORT"
+          echo "DB_URL_MONGO: $DB_URL_MONGO"
+          echo "JWT_SECRET: $JWT_SECRET"
+          echo "COOKIE_SECRET: $COOKIE_SECRET"
+      
       - name: Run tests
         run: npm run test
       # - name: Build Docker image
