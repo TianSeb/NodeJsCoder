@@ -34,9 +34,9 @@ export async function sendOrderEmail(userEmail: any, totalPrice: any, products: 
       html: html,
     }
     await transporter.sendMail(mailOptions)
-    logger.info('Email Sent:', userEmail)
-  } catch (error) {
-    logger.error('Error sending email:', error)
+    logger.info(`Mail Sent to: ${userEmail}`)
+  } catch (error: any) {
+    logger.error(`Error sending email: ${error.msg}`)
   }
 }
 

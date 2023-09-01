@@ -38,7 +38,8 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
         productIndex > -1 ? cart.products[productIndex].quantity += 1 :
             cart.products.push({ id: productId, quantity: 1 })
 
-        const updatedCart = await CartModel.findOneAndUpdate({ _id: cartId }, { products: cart.products })
+        const updatedCart = await CartModel.findOneAndUpdate({ _id: cartId },
+            { products: cart.products }, { new: true })
         logger.info(`Product Saved in Cart: ${updatedCart}`)
     }
 
@@ -110,29 +111,28 @@ export default class CartManagerMongo extends MongoDao<Cart> implements CartDao 
         try {
             const cart = await CartModel.findById(cartId).populate('products.id')
             if (!cart) throw new createError.BadRequest(`Cart not found`)
+            if (cart.products.length === 0) throw new createError
+                .BadRequest(`Cart without products`)
 
-            const purchaseOrder = this.calculatePurchaseOrder(cart)
-            const updateOperations = purchaseOrder.updateOperations
-            const productsForEmail = purchaseOrder.productsForEmail
-            const totalPrice = purchaseOrder.totalPrice
-            
+            logger.debug(`starting purchase order for cart: ${cartId}`)
+
+            const { updateOperations,
+                productsForEmail,
+                totalPrice } = this.calculatePurchaseOrder(cart)
+
             const result = await ProductModel.bulkWrite(updateOperations, { session })
             if (result.modifiedCount !== cart.products.length) {
                 throw createError.NotAcceptable('Out of Stock')
             }
-            
+
             cart.products = []
             await cart.save({ session })
 
             await session.commitTransaction()
             session.endSession()
-            
             logger.info(`Purchase completed successfully for cart ${cart.id}`)
-            return {
-                userEmail,
-                totalPrice,
-                productsForEmail
-            }
+
+            return { userEmail, totalPrice, productsForEmail }
         } catch (error: any) {
             await session.abortTransaction()
             session.endSession()
