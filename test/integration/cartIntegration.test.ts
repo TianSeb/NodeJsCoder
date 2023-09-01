@@ -15,7 +15,7 @@ beforeAll(async () => {
     })
 })
 
-describe('/api/carts', () => {
+describe('Cart Integration Test Suite', () => {
 
     const cartPath = '/api/carts/'
     const cartProductId: string = '64f0e1108d0ccd3643d4f3a9'

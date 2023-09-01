@@ -11,6 +11,7 @@ dotenv.config({
   path: path.resolve(rootPath, `./.env.${process.env.NODE_ENV}`)
 })
 
+
 // const transporter:Transporter = createTransport({
 //   host: process.env.EMAIL_HOST,
 //   port: process.env.PORT_ETHEREAL,

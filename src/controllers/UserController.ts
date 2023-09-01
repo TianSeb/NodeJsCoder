@@ -16,7 +16,7 @@ export default class UserController {
     }
 
     async loginJwt(req: Request, res: Response): Promise<any> {
-        const access_token:any = await userService.loginUser(req.body)
+        const access_token: any = await userService.loginUser(req.body)
         if (!access_token) {
             createResponse(res, 404, { msg: 'Not Found' })
         }
@@ -25,14 +25,18 @@ export default class UserController {
     }
 
     async logout(req: Request, res: Response): Promise<any> {
-        req.logOut((err: any) => {
-            if (err) createResponse(res, 404, { status: 'Logout ERROR', body: err })
-            createResponse(res, 200, { status: 'Logout ok!' })
+        req.session.destroy((err) => {
+            if (err) {
+                logger.error(`Error destroying session ${err}`)
+                createResponse(res, 500, { status: 'Logout ERROR', body: err })
+            } else {
+                createResponse(res, 200, { status: 'Logout ok!' })
+            }
         })
     }
 
     async createSession(req: Request, res: Response): Promise<any> {
-        createResponse(res, 201, { session: req.session })
+        createResponse(res, 201, { user: req.user })
     }
 
     async privateJwt(req: Request, res: Response): Promise<any> {
@@ -47,7 +51,7 @@ export default class UserController {
     }
 
     async resetPass(req: Request, res: Response): Promise<any> {
-        const user:any = req.user
+        const user: any = req.user
         const token = await userService.resetPassword(user.email)
         if (!token) {
             createResponse(res, 404, { msg: 'Not Found' })
@@ -60,11 +64,11 @@ export default class UserController {
     }
 
     async updatePass(req: Request, res: Response): Promise<any> {
-        const user:any = req.user
+        const user: any = req.user
         const { password } = req.body
         const { TOKENPASS } = req.cookies
 
-        if(!TOKENPASS) {
+        if (!TOKENPASS) {
             createResponse(res, 403, { msg: 'Token Not Found' })
             return
         }

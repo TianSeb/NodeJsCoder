@@ -15,7 +15,7 @@ beforeAll(async () => {
     })
 })
 
-describe('/api/products', () => {
+describe('Product Integration Test Suite', () => {
     let productId: string
 
     it('POST a valid product returns status 201', async () => {
