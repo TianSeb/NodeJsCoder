@@ -19,6 +19,9 @@ jobs:
       PORT: ${{ secrets.PORT }}
       DB_URL_MONGO: ${{ secrets.DB_URL_MONGO }}
       SOCKET_URL: ${{ secrets.SOCKET_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
+
 
     steps:
       - uses: actions/checkout@v3
