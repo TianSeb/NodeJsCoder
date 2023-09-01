@@ -6,7 +6,6 @@ const server: Server = new Server()
 const socketService = new SocketServer(server.getHttpServer())
 
 const init = async () => {
-  console.log(`chequeando secret ${process.env.NODE_ENV}`)
   await initDbConnection()
   server.start()
 }
