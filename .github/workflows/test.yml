@@ -9,38 +9,30 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm install
-      - run: npm run build
-        env:
-          NODE_ENV: ${{ secrets.NODE_ENV }}
-          PORT: ${{ secrets.PORT }}
-          DB_URL_MONGO: ${{ secrets.DB_URL_MONGO }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
     # environment:
     #   name: DEV
-    # strategy:
-    #   matrix:
-    #     node-version: [17.x]
+    strategy:
+      matrix:
+        node-version: [17.x]
+    env:
+      NODE_ENV: ${{ secrets.NODE_ENV }}
+      PORT: ${{ secrets.PORT }}
+      DB_URL_MONGO: ${{ secrets.DB_URL_MONGO }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
 
 
-
-    # steps:
-    #   - uses: actions/checkout@v3
+    steps:
+      - uses: actions/checkout@v3
       
-    #   - name: Use Node.js ${{ matrix.node-version }}
-    #     uses: actions/setup-node@v3
-    #     with:
-    #       node-version: ${{ matrix.node-version }}
-    #       cache: 'npm'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-    #   - name: Install Dependencies
-    #     run: npm install
+      - name: Install Dependencies
+        run: npm install
 
       - name: Debug Secrets
         run: |
