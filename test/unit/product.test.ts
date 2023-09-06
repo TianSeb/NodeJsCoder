@@ -2,14 +2,15 @@ import ProductService from '../../src/services/ProductService'
 import ProductController from "../../src/controllers/ProductController"
 import createError from 'http-errors'
 import { CustomProductRequest } from '../../src/middlewares/validators/ProductMw'
-import { pipelineParams } from '../../src/middlewares/validators/ProductMw'
+import { pipelineParams, validateSchema } from '../../src/middlewares/validators/ProductMw'
+import { ProductSchemaValidator } from '../../src/persistence/mongo/models/Product'
 
 /** SET UP **/
-const productService = ProductService.getInstance()
-const productController = new ProductController()
 let req: Partial<CustomProductRequest>
 let res: any
 let next: jest.Mock<any, any>
+const productService = ProductService.getInstance()
+const productController = new ProductController()
 const mockBuildProductQueryPipeline = jest.spyOn(productService, 'buildProductQueryPipeline')
 const mockGetProducts = jest.spyOn(productService, 'getProducts')
 const expectedPipeline = [
@@ -64,7 +65,7 @@ afterEach(() => {
 })
 
 describe('pipelineParams middleware', () => {
-    it('should set pipeline and options on request object and call next', async () => {
+    it('should set pipeline and options in request and call next', async () => {
         mockBuildProductQueryPipeline.mockReturnValueOnce(expectedPipeline)
         await pipelineParams(req as CustomProductRequest, res, next)
 
@@ -116,5 +117,48 @@ describe('Get Products Route', () => {
         })
         expect(mockBuildProductQueryPipeline).toHaveBeenCalledWith('Fruits', "true", '1')
         expect(mockGetProducts).toHaveBeenCalledWith(expectedPipeline, expectedOptions)
+    })
+})
+
+describe('Validate Product Schema', () => {
+    const res: any = {
+        statusCode: 200,
+        json: jest.fn()
+    }
+    const next = jest.fn()
+
+    it('will return error when product fields are incomplete', () => {
+        const req = {
+            body: {
+                description: "only one field is wrong"
+            }
+        }
+        validateSchema(ProductSchemaValidator)(req, res, next)
+
+        expect(next).toHaveBeenCalledWith(expect.any(Error))
+        const error = next.mock.calls[0][0]
+        expect(error.status).toBe(400)
+        expect(error.message).toEqual('Missing required fields: body.title, body.code, ' +
+            'body.price, body.status, body.stock, body.category')
+    })
+
+    it('will call next when products fields are ok', () => {
+        const req = {
+            body: {
+                "title": "Test",
+                "description": "Este es un producto prueba",
+                "code": "123456",
+                "price": 200,
+                "status": true,
+                "stock": 25,
+                "category": "frutas",
+                "thumbnails": [
+                    "Sin imagen"
+                ]
+            }
+        }
+        validateSchema(ProductSchemaValidator)(req, res, next)
+
+        expect(next).not.toHaveBeenCalledWith(expect.any(Error))
     })
 })

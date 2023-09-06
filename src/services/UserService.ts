@@ -36,14 +36,6 @@ export default class UserService {
         if (userExist) throw new createError
             .BadRequest(`User with email ${email} already exists`)
 
-        if (this.isAdmin(email, password)) {
-            return await this.userManager.createUser({
-                ...user,
-                password: createHash(password),
-                role: UserRoles.ADMIN
-            })
-        }
-
         return await this.userManager.createUser({
             ...user,
             password: createHash(password),
@@ -74,7 +66,7 @@ export default class UserService {
         const userRole = await this.getUserRole(userId)
         let updatedRole = (userRole === UserRoles.PREMIUM) ? UserRoles.USER : UserRoles.PREMIUM
         logger.debug(`changing role: ${userRole} to: ${updatedRole}`)
-
+        
         await this.userManager.updateUserRole(userId, updatedRole)
     }
 
@@ -109,10 +101,5 @@ export default class UserService {
             throw new createError.Forbidden(`Wrong username or password`)
         }
         return userRole
-    }
-
-    private isAdmin(email: string, password: string): boolean {
-        return email === 'admin@user.com' &&
-            password === 'admin1234'
     }
 }

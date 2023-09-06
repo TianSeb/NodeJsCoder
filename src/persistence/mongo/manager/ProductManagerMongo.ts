@@ -47,7 +47,7 @@ export default class ProductManagerMongo extends MongoDao<Product> implements Pr
         if (!product) {
             throw new createError.NotFound(`Product with id ${prodId} not found`)
         }
-        logger.info(`Product with id ${product}`)
+        logger.debug(`Updated Product: ${JSON.stringify(product)}`)
         return product
     }
 

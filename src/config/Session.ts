@@ -4,7 +4,7 @@ import MongoStore from 'connect-mongo'
 import config from './Config'
 
 let mongoStoreOptions
-const isTestEnvironment = process.env.NODE_ENV === 'test'
+const isTestEnvironment = process.env.NODE_ENV === 'testing'
 const FileStore = sessionFileStore(session)
 
 const cookiesConfig: any = {

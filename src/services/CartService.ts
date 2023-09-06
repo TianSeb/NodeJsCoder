@@ -49,9 +49,10 @@ export default class CartService {
 
     async purchaseTicket(cartId: string, userEmail: string): Promise<any> {
         const response = await this.cartManager.purchase(cartId, userEmail)
-        const productsForEmail = response.products
-        const totalPrice = response.totalPrice
-        const ticket = await this.ticketManager.createTicket(totalPrice, userEmail, productsForEmail)
+        const { productsForEmail, totalPrice } = response
+        
+        const ticket = await this.ticketManager
+            .createTicket(totalPrice, userEmail, productsForEmail)
         await sendOrderEmail(userEmail, totalPrice, productsForEmail)
         return ticket
     }
@@ -80,7 +81,7 @@ export default class CartService {
         return updatedCart
     }
 
-    private async userAllowedToAddProduct(userRole: string, productId:string): Promise<void> {
+    private async userAllowedToAddProduct(userRole: string, productId: string): Promise<void> {
         const product: any = await this.productManager.getProductById(productId)
         const isNotAuthorized = userRole === UserRoles.PREMIUM && product.owner === UserRoles.PREMIUM
         if (isNotAuthorized) {

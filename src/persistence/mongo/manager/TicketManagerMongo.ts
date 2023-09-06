@@ -24,7 +24,7 @@ export default class TicketManagerMongo extends MongoDao<Ticket> {
             const ticketInstance = new TicketModel(ticketData)
             const savedTicket = await ticketInstance.save()
 
-            logger.info(`Ticket Saved ${savedTicket}`)
+            logger.debug(`Ticket Saved ${JSON.stringify(savedTicket)}`)
             return savedTicket
         } catch (error: any) {
             logger.error(`error creating ticket ${error.msg}`)

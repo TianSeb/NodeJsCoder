@@ -1,6 +1,5 @@
-import { createTransport } from "nodemailer"
+import { createTransport, Transporter, SendMailOptions } from "nodemailer"
 import { readFileSync } from "fs"
-import path from "path"
 import dotenv from 'dotenv'
 import path from 'path'
 import { logger } from "../../utils/Logger"
@@ -12,16 +11,18 @@ dotenv.config({
   path: path.resolve(rootPath, `./.env.${process.env.NODE_ENV}`)
 })
 
-const transporter = createTransport({
+const mailConfig: any = {
   host: process.env.EMAIL_HOST,
   port: process.env.PORT_ETHEREAL,
   auth: {
     user: process.env.EMAIL,
     pass: process.env.PASSWORD
   }
-})
+}
 
-export async function sendOrderEmail(userEmail, totalPrice, products) {
+const transporter: Transporter = createTransport(mailConfig)
+
+export async function sendOrderEmail(userEmail: any, totalPrice: any, products: any) {
   try {
     const templateFile = readFileSync(path.join(__dirname, 'email_template.ejs'), 'utf-8')
     const html = ejs.render(templateFile, { userEmail, totalPrice, products })
@@ -33,13 +34,13 @@ export async function sendOrderEmail(userEmail, totalPrice, products) {
       html: html,
     }
     await transporter.sendMail(mailOptions)
-    logger.info('Email Sent:', userEmail)
-  } catch (error) {
-    logger.error('Error sending email:', error)
+    logger.info(`Mail Sent to: ${userEmail}`)
+  } catch (error: any) {
+    logger.error(`Error sending email: ${error.msg}`)
   }
 }
 
-export async function sendResetPassword(userEmail, hashCode) {
+export async function sendResetPassword(userEmail: any, hashCode: any) {
   try {
     const templateFile = readFileSync(path.join(__dirname, 'reset_password.ejs'), 'utf-8')
     const html = ejs.render(templateFile, { userEmail, hashCode })
@@ -52,7 +53,7 @@ export async function sendResetPassword(userEmail, hashCode) {
     }
     await transporter.sendMail(mailOptions)
     logger.info(`Email Sent: ${userEmail}`)
-  } catch (error) {
+  } catch (error: any) {
     logger.error(`Error sending email: ${error.msg}`)
   }
 }

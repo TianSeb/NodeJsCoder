@@ -28,46 +28,46 @@ interface CustomLevels extends Logger {
   debug: LeveledLogMethod
 }
 
-const devConfig = {
-  levels: myCustomLevels,
-  level: 'debug',
-  format: combine(
-    timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    printf((info: any) => `${info.level} | ${[info.timestamp]} | ${info.message}`),
-    errors({ stack: true }),
-    colorize({ all: true}),
-  ),
-  transports: [
-    new transports.Console(),
-    new transports.File({
-      filename: './logs/app.log',
-      level: 'error'
-    })
-  ],
-  silent: process.env.NODE_ENV === 'test',
+let loggerConfig
+if (config.environment === 'production') {
+  loggerConfig = {
+    levels: myCustomLevels,
+    level: 'error',
+    format: combine(timestamp(), errors({ stack: true }), json()),
+    transports: [
+      new transports.MongoDB({
+        options: { useUnifiedTopology: true },
+        db: config.mongoDatabaseUrl || '',
+        collection: 'logs',
+        tryReconnect: true,
+        level: 'error'
+      }),
+      new transports.File({
+        filename: './logs/app.log',
+        level: 'error'
+      })
+    ],
+  }
+} else {
+  loggerConfig = {
+    levels: myCustomLevels,
+    level: 'debug',
+    format: combine(
+      timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+      printf((info: any) => `${info.level} | ${[info.timestamp]} | ${info.message}`),
+      errors({ stack: true }),
+      colorize({ all: true}),
+    ),
+    transports: [
+      new transports.Console(),
+      new transports.File({
+        filename: './logs/app.log',
+        level: 'error'
+      })
+    ],
+    silent: process.env.NODE_ENV === 'testing',
+  }
 }
-
-const prodConfig = {
-  levels: myCustomLevels,
-  level: 'error',
-  format: combine(timestamp(), errors({ stack: true }), json()),
-  transports: [
-    new transports.MongoDB({
-      options: { useUnifiedTopology: true },
-      db: config.mongoDatabaseUrl || '',
-      collection: 'logs',
-      tryReconnect: true,
-      level: 'error'
-    }),
-    new transports.File({
-      filename: './logs/app.log',
-      level: 'error'
-    })
-  ],
-  silent: process.env.NODE_ENV === 'test',
-}
-
-const logConfig: any = config.environment === 'production' ? prodConfig : devConfig
 addColors(myCustomColors)
 
-export const logger: CustomLevels =  <CustomLevels> createLogger(logConfig)
+export const logger: CustomLevels =  <CustomLevels> createLogger(loggerConfig)

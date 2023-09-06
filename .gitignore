@@ -4,6 +4,10 @@ node_modules
 
 # build output
 dist
+sessions
+logs
+database
+
 # *.js
 *.d.ts
 *.js.map
