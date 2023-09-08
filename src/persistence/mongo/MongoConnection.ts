@@ -3,11 +3,13 @@ import mongoose from 'mongoose'
 import createError from 'http-errors'
 import { logger } from '../../utils/Logger'
 
-export const initMongoDb = async () => {
-  mongoose.connect(config.mongoDatabaseUrl)
+export const initMongoDb = async (): Promise<void> => {
+  mongoose
+    .connect(config.mongoDatabaseUrl)
     .then(() => {
       logger.debug('Mongo Db connection successful')
-    }).catch(err => {
+    })
+    .catch((err) => {
       throw new createError.ServiceUnavailable(err)
     })
 }

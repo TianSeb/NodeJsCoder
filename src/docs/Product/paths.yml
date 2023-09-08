@@ -4,6 +4,8 @@ paths:
       tags:
         - Productos
       summary: Lista de productos en la base de datos
+      security:
+        - JWTAuth: []
       parameters:
         - in: query
           name: page
@@ -51,6 +53,8 @@ paths:
       tags:
         - Productos
       summary: Crear Producto
+      security:
+        - JWTAuth: []
       requestBody:
         content:
           application/json:
@@ -75,6 +79,8 @@ paths:
       tags:
         - Productos
       summary: Obtener un producto por ID
+      security:
+        - JWTAuth: []
       parameters:
         - in: path
           name: id
@@ -100,6 +106,8 @@ paths:
       tags:
         - Productos
       summary: Actualizar un producto por ID
+      security:
+        - JWTAuth: []
       parameters:
         - in: path
           name: id
@@ -150,6 +158,8 @@ paths:
       tags:
         - Productos
       summary: Eliminar un producto por ID
+      security:
+        - JWTAuth: []
       parameters:
         - in: path
           name: id

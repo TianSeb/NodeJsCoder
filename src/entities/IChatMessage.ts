@@ -1,6 +1,6 @@
-import { Document } from "mongoose"
+import type { Document } from 'mongoose'
 
 export interface ChatMessage extends Document {
-    userEmail: string,
-    msg: string
+  userEmail: string
+  msg: string
 }

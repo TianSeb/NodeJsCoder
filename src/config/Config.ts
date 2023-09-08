@@ -10,10 +10,10 @@ dotenv.config({
 const config = {
   environment: process.env.NODE_ENV,
   port: process.env.PORT,
-  mongoDatabaseUrl: process.env.DB_MONGO_URL || 'no connection',
+  mongoDatabaseUrl: process.env.DB_MONGO_URL ?? 'no connection',
   socketUrl: process.env.SOCKET_URL,
-  cookieSecret: process.env.COOKIE_SECRET || "12345789",
-  jwtSecret: process.env.JWT_SECRET || "1234",
+  cookieSecret: process.env.COOKIE_SECRET ?? '12345789',
+  jwtSecret: process.env.JWT_SECRET ?? '1234'
 }
 
 export default config

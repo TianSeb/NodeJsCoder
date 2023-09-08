@@ -52,7 +52,7 @@ describe('User Controller', () => {
         expect(token).toBeDefined()
     })
 
-    it('should return userId when requestin session', async () => {
+    it('should return userId when session', async () => {
         const response = await request(server.getHttpServer())
             .get('/users/session')
             .set('Authorization', `Bearer ${token}`)
