@@ -4,6 +4,8 @@ paths:
       tags:
         - Carritos
       summary: Lista de carritos
+      security:
+        - JWTAuth: []
       responses:
         200:
           description: Lista de carritos
@@ -22,6 +24,8 @@ paths:
       tags:
         - Carritos
       summary: Crear un nuevo carrito
+      security:
+        - JWTAuth: []
       responses:
         201:
           description: Carrito creado
@@ -41,6 +45,8 @@ paths:
       tags:
         - Carritos
       summary: Obtener un carrito por ID
+      security:
+        - JWTAuth: []
       parameters:
         - in: path
           name: cid
@@ -66,6 +72,8 @@ paths:
       tags:
         - Carritos
       summary: Actualizar cantidad de productos en un carrito
+      security:
+        - JWTAuth: []
       parameters:
         - in: path
           name: cid
@@ -97,6 +105,8 @@ paths:
       tags:
         - Carritos
       summary: Eliminar un carrito por ID
+      security:
+        - JWTAuth: []
       parameters:
         - in: path
           name: cid
@@ -123,6 +133,8 @@ paths:
       tags:
         - Carritos
       summary: Actualizar un producto en un carrito
+      security:
+        - JWTAuth: []
       parameters:
         - in: path
           name: cid
@@ -179,6 +191,8 @@ paths:
       tags:
         - Carritos
       summary: Eliminar un producto de un carrito
+      security:
+        - JWTAuth: []
       parameters:
         - in: path
           name: cid
@@ -211,6 +225,8 @@ paths:
       tags:
         - Carritos
       summary: Realizar una compra desde el carrito
+      security:
+        - JWTAuth: []
       parameters:
         - in: path
           name: cid

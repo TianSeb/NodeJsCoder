@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import mongoose from 'mongoose'
 import type { PaginateResult } from 'mongoose'
 import DaoFactory from '../persistence/DaoFactory'
@@ -118,7 +119,7 @@ export default class ProductService {
     const parsedStatus = status === 'true'
     const pipeline: any[] = []
 
-    if (category !== null) {
+    if (category) {
       pipeline.push({
         $match: {
           // eslint-disable-next-line object-shorthand
@@ -135,7 +136,7 @@ export default class ProductService {
       })
     }
 
-    if (sort !== null) {
+    if (sort) {
       const sortOrder = parseInt(sort)
       pipeline.push({
         $sort: {

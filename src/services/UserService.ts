@@ -104,7 +104,7 @@ export default class UserService {
 
     const userRole = user.role
     if (userRole === null || userRole === undefined)
-      throw new createError.NotFound(`User Not Found`)
+      throw new createError.NotFound(`User Role Not Found`)
 
     if (!allowedRoles.includes(userRole)) {
       throw new createError.Forbidden(`Wrong username or password`)

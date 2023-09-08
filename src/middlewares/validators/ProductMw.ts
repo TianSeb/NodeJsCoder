@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import type { Request as ExpressRequest, Response, NextFunction } from 'express'
 import ProductService from '../../services/ProductService'
 import createError from 'http-errors'
@@ -17,8 +18,9 @@ export const pipelineParams = async (
   try {
     logger.debug(`Inside pipelineParams ${JSON.stringify(req.query)}`)
     const { page, limit, category, status, sort } = req.query
-    const parsedPage = parseInt(page as string) ?? 1
-    const parsedLimit = parseInt(limit as string) ?? 10
+    const parsedPage = parseInt(page as string) || 1
+    const parsedLimit = parseInt(limit as string) || 10
+
     const options = { page: parsedPage, limit: parsedLimit }
     const pipeline = productService.buildProductQueryPipeline(
       category,
