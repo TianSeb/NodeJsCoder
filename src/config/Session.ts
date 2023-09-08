@@ -1,17 +1,12 @@
 import sessionFileStore from 'session-file-store'
 import session from 'express-session'
+import type { SessionOptions } from 'express-session'
 import MongoStore from 'connect-mongo'
 import config from './Config'
 
-let mongoStoreOptions
+let sessionStore: SessionOptions
 const isTestEnvironment = process.env.NODE_ENV === 'testing'
 const FileStore = sessionFileStore(session)
-
-const cookiesConfig: any = {
-  secret: config.cookieSecret,
-  resave: false,
-  saveUninitialized: false,
-}
 
 const fileStoreOptions = {
   store: new FileStore({
@@ -19,17 +14,25 @@ const fileStoreOptions = {
     ttl: 380,
     reapInterval: 120
   }),
-  ...cookiesConfig
+  secret: config.cookieSecret,
+  resave: false,
+  saveUninitialized: false
 }
 
-if (!isTestEnvironment) {
-  mongoStoreOptions = {
-    store: new MongoStore({
-      mongoUrl: config.mongoDatabaseUrl,
-      ttl: 380
-    }),
-    ...cookiesConfig
-  }
+const mongoStoreOptions: SessionOptions = {
+  store: new MongoStore({
+    mongoUrl: config.mongoDatabaseUrl,
+    ttl: 380
+  }),
+  secret: config.cookieSecret,
+  resave: false,
+  saveUninitialized: false
 }
 
-export const sessionStore: any = isTestEnvironment ? fileStoreOptions : mongoStoreOptions
+if (isTestEnvironment) {
+  sessionStore = fileStoreOptions
+} else {
+  sessionStore = mongoStoreOptions
+}
+
+export default sessionStore

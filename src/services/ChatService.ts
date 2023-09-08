@@ -1,32 +1,31 @@
 import DaoFactory from '../persistence/DaoFactory'
-import { ChatMessage } from '../entities/IChatMessage'
+import type { ChatMessage } from '../entities/IChatMessage'
 
 export default class ChatService {
+  private static instance: ChatService | null = null
+  private readonly chatDao
 
-    private static instance: ChatService | null = null
-    private chatDao
+  private constructor() {
+    this.chatDao = DaoFactory.getChatDaoInstance()
+  }
 
-    constructor() {
-        this.chatDao = DaoFactory.getChatDaoInstance()
+  static getInstance(): ChatService {
+    if (this.instance === null && this.instance !== undefined) {
+      this.instance = new ChatService()
     }
+    return this.instance
+  }
 
-    static getInstance(): ChatService {
-        if (!ChatService.instance) {
-            ChatService.instance = new ChatService()
-        }
-        return ChatService.instance
-    }
+  async saveMsg(data: any): Promise<ChatMessage | Error> {
+    const chatMsg = await this.chatDao.saveMsg(data)
+    return chatMsg
+  }
 
-    async saveMsg(data:any) : Promise<ChatMessage | Error> {
-        let chatMsg = await this.chatDao.saveMsg(data)
-        return chatMsg
-    }
+  async getAllMsgs(): Promise<ChatMessage[] | Error> {
+    return await this.chatDao.getAllMsgs()
+  }
 
-    async getAllMsgs() : Promise<ChatMessage[] | Error> {
-        return await this.chatDao.getAllMsgs()
-    }
-
-    async deleteAllMsgs() : Promise<void> {
-        await this.chatDao.deleteAllMsgs()
-    }
+  async deleteAllMsgs(): Promise<void> {
+    await this.chatDao.deleteAllMsgs()
+  }
 }

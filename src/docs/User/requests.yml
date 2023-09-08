@@ -1,0 +1,18 @@
+components:
+  parameters:
+    schemas:
+      login: 
+        type: object
+        required:   
+          - email
+          - password
+        properties:  
+          email:
+            type: string
+            description: User email
+          password:
+            type: string
+            description: User password
+        example:
+          email: tyrion@mail.com
+          password: abc123def456

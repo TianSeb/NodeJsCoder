@@ -1,18 +1,17 @@
-import { User } from "../../../../entities/IUser"
+import type { User } from '../../../../entities/IUser'
 
 export default class UserResponseDTO {
+  private readonly firstName: string
+  private readonly lastName: string
+  private readonly email: string
 
-  private firstName:string
-  private lastName: string
-  private email: string
-  
   constructor(user: Partial<User>) {
-    this.firstName = user.firstName || ""
-    this.lastName = user.lastName || ""
-    this.email = user.email || ""
+    this.firstName = user.firstName ?? ''
+    this.lastName = user.lastName ?? ''
+    this.email = user.email ?? ''
   }
 
-  getEmail() {
+  getEmail(): string {
     return this.email
   }
 }
