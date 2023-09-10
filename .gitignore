@@ -19,5 +19,4 @@ database
 # misc
 .DS_Store
 .env.*
-.todo.*
-.todo.md
+todo.md
