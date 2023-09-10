@@ -19,5 +19,5 @@ database
 # misc
 .DS_Store
 .env.*
-.requests.*
-.todo.node_modules
+.todo.*
+.todo.md
