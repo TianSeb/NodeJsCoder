@@ -1,20 +1,13 @@
-import MongoDao from '../MongoDao'
 import { UserModel } from '../models/User'
 import type { User } from '../../../entities/IUser'
 import type { UserDao } from '../../interfaces/UserDao'
 import { logger } from '../../../utils/Logger'
 import createError from 'http-errors'
 
-export default class UserManagerMongo
-  extends MongoDao<User>
-  implements UserDao
-{
-  constructor() {
-    super(UserModel)
-  }
-
+export default class UserManagerMongo implements UserDao {
   async createUser(user: User): Promise<User> {
-    const newUser = await super.create(user)
+    const newUserInstance = new UserModel(user)
+    const newUser = await newUserInstance.save()
     logger.info('User created')
     return newUser
   }

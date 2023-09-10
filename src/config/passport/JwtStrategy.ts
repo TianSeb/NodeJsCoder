@@ -12,21 +12,23 @@ const strategyOptions: any = {
 }
 
 const verifyToken: any = async (jwtPayload: any, done: any): Promise<any> => {
-  logger.debug(`reading payload---> ${JSON.stringify(jwtPayload)}`)
-  const user = await userService.findUser({ _id: jwtPayload.userId })
+  logger.debug(`reading payload ---> ${JSON.stringify(jwtPayload)}`)
+  const user = await userService.findUserWithFilter({
+    _id: jwtPayload._id
+  })
   if (user === null) return done(null, false)
   return done(null, jwtPayload)
 }
 
-passport.serializeUser((user: any, done: any) => {
-  logger.debug('serializing user')
-  done(null, user.userId)
+passport.serializeUser((jwtPayload: any, done: any) => {
+  logger.debug(`serializing user ${JSON.stringify(jwtPayload.email)}`)
+  done(null, jwtPayload._id)
 })
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 passport.deserializeUser(async (req: any, id: string, done: any) => {
   logger.debug('deserializing user')
-  const user = await userService.findUser({ _id: id })
+  const user = await userService.findUserWithFilter({ _id: id })
   done(null, user)
 })
 
