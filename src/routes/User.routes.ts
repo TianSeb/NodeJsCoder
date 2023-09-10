@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import passport from 'passport'
-import { isAuthenticated } from '../middlewares/AuthMw'
+import { isAuthenticated, requireRefreshToken } from '../middlewares/AuthMw'
 import asyncHandler from 'express-async-handler'
 import UserController from '../controllers/UserController'
 
@@ -11,6 +11,11 @@ usersRoute
   .post('/register', asyncHandler(userController.registerUserJwt))
   .post('/login', asyncHandler(userController.loginJwt))
   .post('/logout', asyncHandler(userController.logout))
+  .post(
+    '/refresh',
+    requireRefreshToken,
+    asyncHandler(userController.refreshToken)
+  )
   .post(
     '/reset/',
     passport.authenticate('jwt'),

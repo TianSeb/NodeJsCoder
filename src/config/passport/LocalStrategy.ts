@@ -53,7 +53,7 @@ passport.serializeUser((user: Partial<User>, done: any) => {
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 passport.deserializeUser(async (req: any, id: string, done: any) => {
   logger.debug('deserializing user')
-  const user = await userService.findUser({ _id: id })
+  const user = await userService.findUserWithFilter({ _id: id })
   done(null, user)
 })
 

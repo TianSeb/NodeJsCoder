@@ -1,9 +1,12 @@
 import type { Request, Response } from 'express'
 import UserService from '../services/UserService'
+import SignTokenService from '../services/SignTokenService'
+import { sendResetPassword } from '../config/email/email'
 import { createResponse } from '../utils/Utils'
 import { logger } from '../utils/Logger'
 
 const userService = UserService.getInstance()
+const signTokenService = SignTokenService.getInstance()
 const RESET_TOKEN: string = 'TOKENPASS'
 
 export default class UserController {
@@ -15,15 +18,17 @@ export default class UserController {
   }
 
   async loginJwt(req: Request, res: Response): Promise<any> {
-    const accessToken: any = await userService.loginUser(req.body)
-    if (accessToken === null) {
-      createResponse(res, 404, { msg: 'Not Found' })
-    }
+    const userFound = await userService.loginUser(req.body)
+    const accessToken = signTokenService.generateToken(userFound)
+    signTokenService.generateRefreshToken(userFound, res)
+
     res.header('AUTH_TOKEN', accessToken)
-    createResponse(res, 201, { msg: 'Login OK', access_token: accessToken })
+    createResponse(res, 201, { msg: 'Login OK', accessToken })
   }
 
   async logout(req: Request, res: Response): Promise<any> {
+    res.clearCookie('refreshToken')
+    res.clearCookie('AUTH_TOKEN')
     req.session.destroy((err: any) => {
       if (err !== null) {
         logger.error(`Error destroying session ${err}`)
@@ -34,8 +39,21 @@ export default class UserController {
     })
   }
 
+  async refreshToken(req: Request, res: Response): Promise<void> {
+    const { userId } = signTokenService.verifyRefreshToken(
+      req.cookies.refreshToken
+    )
+    const userFound = await userService.findUserWithFilter({ _id: userId })
+    const accessToken = signTokenService.generateToken(userFound)
+    res.clearCookie('AUTH_TOKEN')
+    res.header('AUTH_TOKEN', accessToken)
+    createResponse(res, 200, { status: 'Refresh Ok', accessToken })
+  }
+
   async createSession(req: Request, res: Response): Promise<any> {
-    createResponse(res, 201, { user: req.user })
+    if (req.user !== null && req.user !== undefined) {
+      createResponse(res, 201, { session: req.user })
+    }
   }
 
   async privateJwt(req: Request, res: Response): Promise<any> {
@@ -52,13 +70,17 @@ export default class UserController {
 
   async resetPass(req: Request, res: Response): Promise<any> {
     const user: any = req.user
-    const token = await userService.resetPassword(user.email)
-    if (token !== null) {
+    const userFound = await userService.findUserWithFilter({
+      email: user.email
+    })
+    if (userFound === null) {
       createResponse(res, 404, { msg: 'Not Found' })
       logger.debug(`error reseting password for ${user.email}`)
       return
     }
-    res.cookie(RESET_TOKEN, token)
+    const accessToken = signTokenService.generateToken(userFound)
+    await sendResetPassword(user.email, accessToken)
+    res.cookie(RESET_TOKEN, accessToken)
     createResponse(res, 200, { msg: 'reset password email sent' })
     logger.debug(`reset password --> email sent ${user.email}`)
   }

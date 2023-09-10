@@ -22,6 +22,20 @@ export const isAuthenticated = (
   return next(createError(403, 'Not Authorized'))
 }
 
+export const requireRefreshToken = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  logger.debug('veryfying refresh token')
+  const refreshToken = req.cookies.refreshToken
+  if (refreshToken === null) return next(createError(403, 'Not Authorized'))
+
+  // reddis logic to be developed
+
+  return next()
+}
+
 export const validateUserRole = (
   req: Request,
   res: Response,
@@ -38,6 +52,7 @@ export const validateUserRole = (
     ) {
       return next()
     }
+    logger.debug('Failed to validate user Role in mw')
   }
   return next(createError(403, 'User Role Not Authorized'))
 }
