@@ -12,12 +12,17 @@ usersRoute
   .post('/login', asyncHandler(userController.loginJwt))
   .post('/logout', asyncHandler(userController.logout))
   .post(
-    '/refresh',
+    '/refresh-token',
     requireRefreshToken,
     asyncHandler(userController.refreshToken)
   )
   .post(
-    '/reset/',
+    '/refresh-token',
+    requireRefreshToken,
+    asyncHandler(userController.refreshToken)
+  )
+  .post(
+    '/reset-password/',
     passport.authenticate('jwt'),
     isAuthenticated,
     asyncHandler(userController.resetPass)

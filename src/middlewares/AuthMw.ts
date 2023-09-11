@@ -28,12 +28,10 @@ export const requireRefreshToken = (
   next: NextFunction
 ): void => {
   logger.debug('veryfying refresh token')
-  const refreshToken = req.cookies.refreshToken
+  const refreshToken = req.body.refreshToken
   if (refreshToken === null) return next(createError(403, 'Not Authorized'))
-
   // reddis logic to be developed
-
-  return next()
+  next()
 }
 
 export const validateUserRole = (
