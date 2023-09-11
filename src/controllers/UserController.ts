@@ -8,7 +8,8 @@ import { logger } from '../utils/Logger'
 const userService = UserService.getInstance()
 const signTokenService = SignTokenService.getInstance()
 const RESET_TOKEN: string = 'TOKENPASS'
-
+const AUTHORIZATION_HEADER = 'Authorization'
+const REFRESH_HEADER = 'RefreshToken'
 export default class UserController {
   async registerUserJwt(req: Request, res: Response): Promise<any> {
     const newUser = await userService.createUser(req.body)
@@ -20,15 +21,14 @@ export default class UserController {
   async loginJwt(req: Request, res: Response): Promise<any> {
     const userFound = await userService.loginUser(req.body)
     const accessToken = signTokenService.generateToken(userFound)
-    signTokenService.generateRefreshToken(userFound, res)
+    const refreshToken = signTokenService.generateRefreshToken(userFound)
 
-    res.header('AUTH_TOKEN', accessToken)
-    createResponse(res, 201, { msg: 'Login OK', accessToken })
+    res.setHeader(AUTHORIZATION_HEADER, `Bearer ${accessToken}`)
+    res.setHeader(REFRESH_HEADER, `Bearer ${refreshToken}`)
+    createResponse(res, 201, { msg: 'Login OK', accessToken, refreshToken })
   }
 
   async logout(req: Request, res: Response): Promise<any> {
-    res.clearCookie('refreshToken')
-    res.clearCookie('AUTH_TOKEN')
     req.session.destroy((err: any) => {
       if (err !== null) {
         logger.error(`Error destroying session ${err}`)
@@ -41,12 +41,12 @@ export default class UserController {
 
   async refreshToken(req: Request, res: Response): Promise<void> {
     const { userId } = signTokenService.verifyRefreshToken(
-      req.cookies.refreshToken
+      req.body.refreshToken
     )
     const userFound = await userService.findUserWithFilter({ _id: userId })
     const accessToken = signTokenService.generateToken(userFound)
-    res.clearCookie('AUTH_TOKEN')
-    res.header('AUTH_TOKEN', accessToken)
+
+    res.header(AUTHORIZATION_HEADER, accessToken)
     createResponse(res, 200, { status: 'Refresh Ok', accessToken })
   }
 

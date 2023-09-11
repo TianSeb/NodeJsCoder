@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import config from '../config/Config'
 import type { User } from '../entities/IUser'
+import createError from 'http-errors'
 
 export default class SignTokenService {
   private static instance: SignTokenService | null = null
@@ -25,31 +26,20 @@ export default class SignTokenService {
     })
   }
 
-  generateRefreshToken(user: Partial<User>, res: any): any {
+  generateRefreshToken(user: Partial<User>): string | null {
     if (user._id !== null) {
-      const expirationDate = new Date()
-      expirationDate.setTime(
-        expirationDate.getTime() + parseInt(this.REFRESH_TIME) * 60 * 1000
-      )
-
-      const refreshToken = jwt.sign(
-        { userId: user._id },
-        config.jwtRefreshSecret,
-        {
-          expiresIn: this.REFRESH_TIME
-        }
-      )
-
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: config.environment === 'production',
-        expires: expirationDate
+      return jwt.sign({ userId: user._id }, config.jwtRefreshSecret, {
+        expiresIn: this.REFRESH_TIME
       })
     }
+    return null
   }
 
   verifyRefreshToken(refreshToken: string): any {
-    const response = jwt.verify(refreshToken, config.jwtRefreshSecret)
-    return response
+    try {
+      return jwt.verify(refreshToken, config.jwtRefreshSecret)
+    } catch (error) {
+      throw new createError[400]('refresh token expired')
+    }
   }
 }
