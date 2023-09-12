@@ -6,6 +6,7 @@ import { createHash, isValidPassword } from '../utils/Utils'
 import { logger } from '../utils/Logger'
 import { UserRoles } from '../entities/IUser'
 import { UserModel } from '../persistence/mongo/models/User'
+import type UserResponseDTO from '../persistence/mongo/dtos/user/User.Response'
 
 export default class UserService {
   private static instance: UserService | null = null
@@ -48,8 +49,8 @@ export default class UserService {
 
     const checkPassword = isValidPassword(password, userFound)
     if (!checkPassword) throw new createError.Forbidden(`Wrong password`)
-
-    logger.debug(`login user ${userFound.email}`)
+    logger.debug(`login User: ${userFound.email}`)
+    await this.userManager.updateLastConnection(email)
 
     return userFound
   }
@@ -60,6 +61,10 @@ export default class UserService {
     if (userFound === null)
       throw new createError.Forbidden(`Wrong username or password`)
     return userFound
+  }
+
+  async getUsers(): Promise<UserResponseDTO[]> {
+    return await this.userRepository.getUsers()
   }
 
   async changeUserRole(userId: string): Promise<void> {
@@ -82,6 +87,11 @@ export default class UserService {
     await this.userManager.updateUserPassword(email, newPass)
   }
 
+  async deleteUsers(): Promise<string> {
+    const deletedCount = await this.userManager.deleteUsers()
+    return deletedCount
+  }
+
   private async getUserRole(userId: string): Promise<any> {
     const allowedRoles = [UserRoles.PREMIUM, UserRoles.USER]
 
@@ -97,12 +107,5 @@ export default class UserService {
       throw new createError.Forbidden(`Wrong username or password`)
     }
     return userRole
-  }
-
-  async refreshToken(userId: string): Promise<void> {
-    const userFound = await this.userManager.findUser({ _id: userId })
-    if (userFound === null || userFound === undefined)
-      throw new createError.Forbidden(`Wrong username or password`)
-    // await this.signTokenService.generateToken
   }
 }

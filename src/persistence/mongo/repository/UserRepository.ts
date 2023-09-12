@@ -24,4 +24,10 @@ export default class UserRepository {
     }
     return userDto
   }
+
+  async getUsers(): Promise<UserResponseDTO[]> {
+    const users = await this.userManager.findAllUsers()
+    const usersDto = users.map((user) => new UserResponseDTO(user))
+    return usersDto
+  }
 }

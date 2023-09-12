@@ -7,6 +7,7 @@ import {
   validateSchema
 } from '../middlewares/validators/ProductMw'
 import { validateUserRole } from '../middlewares/AuthMw'
+import { UserRoles } from '../entities/IUser'
 
 const productController = new ProductController()
 const productsRoute = Router()
@@ -20,23 +21,23 @@ productsRoute
   .get('/products/:pid', asyncHandler(productController.getProductById))
   .post(
     '/products/',
-    validateUserRole,
+    validateUserRole([UserRoles.ADMIN, UserRoles.PREMIUM]),
     validateSchema(ProductSchemaValidator),
     asyncHandler(productController.addProduct)
   )
   .put(
     '/products/:pid',
-    validateUserRole,
+    validateUserRole([UserRoles.ADMIN, UserRoles.PREMIUM]),
     asyncHandler(productController.updateProductById)
   )
   .delete(
     '/products/:pid',
-    validateUserRole,
+    validateUserRole([UserRoles.ADMIN, UserRoles.PREMIUM]),
     asyncHandler(productController.deleteProductById)
   )
   .delete(
     '/products/',
-    validateUserRole,
+    validateUserRole([UserRoles.ADMIN, UserRoles.PREMIUM]),
     asyncHandler(productController.deleteAll)
   )
 

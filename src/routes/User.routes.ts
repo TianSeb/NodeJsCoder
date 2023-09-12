@@ -1,8 +1,13 @@
 import { Router } from 'express'
 import passport from 'passport'
-import { isAuthenticated, requireRefreshToken } from '../middlewares/AuthMw'
+import {
+  isAuthenticated,
+  requireRefreshToken,
+  validateUserRole
+} from '../middlewares/AuthMw'
 import asyncHandler from 'express-async-handler'
 import UserController from '../controllers/UserController'
+import { UserRoles } from '../entities/IUser'
 
 const usersRoute = Router()
 const userController = new UserController()
@@ -38,12 +43,20 @@ usersRoute
     '/session',
     passport.authenticate('jwt'),
     isAuthenticated,
-    asyncHandler(userController.createSession)
+    asyncHandler(userController.getCurrentUser)
   )
   .get(
-    '/jwt-test',
+    '/users',
     passport.authenticate('jwt'),
-    asyncHandler(userController.privateJwt)
+    isAuthenticated,
+    asyncHandler(userController.getUsers)
+  )
+  .delete(
+    '/users',
+    passport.authenticate('jwt'),
+    isAuthenticated,
+    validateUserRole([UserRoles.ADMIN, UserRoles.PREMIUM]),
+    asyncHandler(userController.deleteUsers)
   )
 
 export default usersRoute

@@ -1,19 +1,28 @@
 components:
   schema:
     Users:
+      UserCreated:
+        type: object
+        properties: 
+          msg:
+            type: string
+            description: Request Message
+        example:
+          msg: User ${username} created
       User:
         type: object
         properties: 
-          status:
-            type: number
-            description: Request Status
-          message:
+          msg:
             type: string
             description: Request Message
-          data:
+          accessToken:
+            type: string
+            description: User Token
+          refreshToken:
             type: string
             description: User Token
         example:
-          status: 200
-          message: Success
-          data: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGU1MzZhZjU5ZGM3ZDcwZTczZDhjYWMiLCJpYXQiOjE2OTMzOTMzODIsImV4cCI6MTY5MzM5NDI4Mn0.3t3rqyv_3CPzd6yNnJgPvifmw2IBvY0Il7eqc4Zgh_w
+          msg: Login OK
+          accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI....
+          refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI....
+          
