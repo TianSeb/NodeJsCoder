@@ -21,7 +21,6 @@ beforeAll(async () => {
 
 describe('User Controller', () => {
   let token: any
-  let userId: any
 
   it('should create user and return status 201', async () => {
     const response = await request(server.getHttpServer())
@@ -53,26 +52,26 @@ describe('User Controller', () => {
     expect(token).toBeDefined()
   })
 
-  it('should return userId when session', async () => {
+  it('should return userDto in session', async () => {
     const response = await request(server.getHttpServer())
       .get('/users/session')
       .set('Authorization', `Bearer ${token}`)
 
     expect(response.status).toBe(201)
-    userId = response.body.data.session._id
-    expect(userId).toBeDefined()
-    expect(response.body.data.session.role).toEqual('user')
+    const dtoEmail = response.body.data.email
+    expect(dtoEmail).toBeDefined()
+    expect(response.body.data.role).toEqual('user')
   })
 
   it('should return user with Role changed to premium', async () => {
     const responseUserRole = await request(server.getHttpServer())
-      .put('/users/premium/' + userId)
+      .put('/users/premium/' + userEmail)
       .set('Authorization', `Bearer ${token}`)
 
     expect(responseUserRole.status).toBe(200)
 
     const updatedUser: any = await userService.findUserWithFilter({
-      _id: userId
+      email: userEmail
     })
     expect(updatedUser.role).toEqual('premium')
   })

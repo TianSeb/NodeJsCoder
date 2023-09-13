@@ -45,7 +45,7 @@ export async function sendOrderEmail(
     await transporter.sendMail(mailOptions)
     logger.info(`Mail Sent to: ${userEmail}`)
   } catch (error) {
-    handleTryCatchError('Error sending email', error)
+    handleTryCatchError('Error sending purchase email', error)
   }
 }
 
@@ -69,6 +69,33 @@ export async function sendResetPassword(
     await transporter.sendMail(mailOptions)
     logger.info(`Email Sent: ${userEmail}`)
   } catch (error) {
-    handleTryCatchError('Error sending email', error)
+    handleTryCatchError('Error sending reset email', error)
+  }
+}
+
+export async function sendDeletedEmail(userEmails: string[]): Promise<void> {
+  try {
+    const templateFile = readFileSync(
+      path.join(__dirname, 'email_deleted.ejs'),
+      'utf-8'
+    )
+
+    await Promise.all(
+      userEmails.map(async (userEmail) => {
+        const html = ejs.render(templateFile, { userEmail })
+
+        const mailOptions = {
+          from: process.env.EMAIL,
+          to: userEmail,
+          subject: 'Email Deleted',
+          html
+        }
+
+        await transporter.sendMail(mailOptions)
+        logger.info(`Email Deleted: ${userEmail}`)
+      })
+    )
+  } catch (error) {
+    handleTryCatchError('Error sending delete email', error)
   }
 }

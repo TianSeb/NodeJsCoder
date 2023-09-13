@@ -5,8 +5,8 @@ import type { User } from '../entities/IUser'
 import { createHash, isValidPassword } from '../utils/Utils'
 import { logger } from '../utils/Logger'
 import { UserRoles } from '../entities/IUser'
-import { UserModel } from '../persistence/mongo/models/User'
 import type UserResponseDTO from '../persistence/mongo/dtos/user/User.Response'
+import { sendDeletedEmail } from '../config/email/email'
 
 export default class UserService {
   private static instance: UserService | null = null
@@ -67,13 +67,13 @@ export default class UserService {
     return await this.userRepository.getUsers()
   }
 
-  async changeUserRole(userId: string): Promise<void> {
-    const userRole = await this.getUserRole(userId)
+  async changeUserRole(userEmail: string): Promise<void> {
+    const userRole = await this.getUserRole(userEmail)
     const updatedRole =
       userRole === UserRoles.PREMIUM ? UserRoles.USER : UserRoles.PREMIUM
     logger.debug(`changing role: ${userRole} to: ${updatedRole}`)
 
-    await this.userManager.updateUserRole(userId, updatedRole)
+    await this.userManager.updateUserRole(userEmail, updatedRole)
   }
 
   async updatePassword(email: string, password: string): Promise<void> {
@@ -88,14 +88,16 @@ export default class UserService {
   }
 
   async deleteUsers(): Promise<string> {
-    const deletedCount = await this.userManager.deleteUsers()
-    return deletedCount
+    const deletedEmails = await this.userManager.deleteUsers()
+    await sendDeletedEmail(deletedEmails)
+
+    return deletedEmails.length.toString()
   }
 
-  private async getUserRole(userId: string): Promise<any> {
+  private async getUserRole(userEmail: string): Promise<any> {
     const allowedRoles = [UserRoles.PREMIUM, UserRoles.USER]
 
-    const user = await UserModel.findById(userId)
+    const user = await this.findUserWithFilter({ email: userEmail })
     if (user === null || user === undefined)
       throw new createError.NotFound(`User Not Found`)
 

@@ -5,7 +5,7 @@ export interface UserDao {
   findUser: (field: any) => Promise<User | null>
   findAllUsers: () => Promise<User[]>
   updateLastConnection: (userEmail: string) => Promise<void>
-  updateUserRole: (userId: string, userRole: string) => Promise<User>
+  updateUserRole: (userEmail: string, userRole: string) => Promise<User>
   updateUserPassword: (userEmail: string, userPassword: string) => Promise<void>
-  deleteUsers: () => Promise<string>
+  deleteUsers: () => Promise<string[] | []>
 }

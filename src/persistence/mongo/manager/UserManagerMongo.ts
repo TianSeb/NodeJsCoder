@@ -20,9 +20,9 @@ export default class UserManagerMongo implements UserDao {
     return await UserModel.find()
   }
 
-  async updateUserRole(userId: string, newRole: string): Promise<User> {
+  async updateUserRole(userEmail: string, newRole: string): Promise<User> {
     const updatedUser = await UserModel.findOneAndUpdate(
-      { _id: userId },
+      { email: userEmail },
       { role: newRole },
       { new: true }
     )
@@ -54,13 +54,21 @@ export default class UserManagerMongo implements UserDao {
     logger.debug(`login date updated to ${loginDate.toDateString()}`)
   }
 
-  async deleteUsers(): Promise<string> {
+  async deleteUsers(): Promise<string[] | []> {
     const dateLimit = this.calculateDateLimit(2)
     logger.debug(`deleting users older than: ${dateLimit}`)
-    const deletedCount = await UserModel.deleteMany({
+
+    const usersToDelete = await UserModel.find({
       lastConnection: { $lt: dateLimit }
     })
-    return deletedCount.deletedCount.toString()
+
+    await UserModel.deleteMany({
+      lastConnection: { $lt: dateLimit }
+    })
+
+    const deletedEmails = usersToDelete.map((user) => user.email)
+
+    return deletedEmails
   }
 
   private calculateDateLimit(daysToSubtract: number): string {

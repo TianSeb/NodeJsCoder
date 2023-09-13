@@ -34,7 +34,7 @@ usersRoute
     asyncHandler(userController.updatePass)
   )
   .put(
-    '/premium/:uid',
+    '/premium/:email',
     passport.authenticate('jwt'),
     isAuthenticated,
     asyncHandler(userController.changeUserRole)

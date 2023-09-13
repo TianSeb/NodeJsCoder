@@ -54,7 +54,7 @@ export default class UserController {
   async getCurrentUser(req: Request, res: Response): Promise<any> {
     if (req.user !== null && req.user !== undefined) {
       const userDto = new UserResponseDTO(req.user)
-      createResponse(res, 201, { session: userDto })
+      createResponse(res, 201, userDto)
     }
   }
 
@@ -63,7 +63,7 @@ export default class UserController {
   }
 
   async changeUserRole(req: Request, res: Response): Promise<any> {
-    await userService.changeUserRole(req.params.uid)
+    await userService.changeUserRole(req.params.email)
     createResponse(res, 200, 'User role changed')
   }
 
