@@ -8,6 +8,7 @@ import { UserRoles } from '../entities/IUser'
 import { sendSocketMessage } from '../socket/SocketClient'
 import createError from 'http-errors'
 import { logger } from '../utils/Logger'
+import { sendProductDeletedEmail } from '../config/email/email'
 
 export default class ProductService {
   private static instance: ProductService | null = null
@@ -30,7 +31,7 @@ export default class ProductService {
     try {
       const savedProduct = await this.productManager.addProduct(data)
       sendSocketMessage('productSaved', savedProduct)
-      logger.debug('Product saved')
+      logger.debug(`Product saved: ${JSON.stringify(savedProduct)}`)
       return savedProduct
     } catch (error: any) {
       logger.error(`error adding product ${error.message}`)
@@ -54,6 +55,7 @@ export default class ProductService {
   async getProductById(id: any): Promise<Product> {
     const product = await this.productManager.getProductById(id) // this.productRepository.getProductById(id)
     if (product != null) {
+      logger.debug(`Found product with id: ${product._id}`)
       return product
     } else {
       logger.debug(`product ${id} not found`)
@@ -65,7 +67,7 @@ export default class ProductService {
     const product = await this.getProductById(id)
     this.validateUserRole(userRole, product)
     const deleted = await this.productManager.deleteProductById(id)
-
+    await this.sendMailWhenPremiumProductIsDeleted(product)
     if (deleted === 1) {
       sendSocketMessage('productDeleted', id)
       logger.debug(`product with id: ${id} deleted`)
@@ -107,10 +109,23 @@ export default class ProductService {
   private validateUserRole(userRole: string, product: Product): void {
     const isUserAuthorized =
       userRole === UserRoles.ADMIN ||
-      (userRole === UserRoles.PREMIUM && product.owner === UserRoles.PREMIUM)
+      (userRole === UserRoles.PREMIUM &&
+        product.ownerRole === UserRoles.PREMIUM)
     if (!isUserAuthorized) {
       throw new createError.NotFound(
         `User not authorized to perform this action`
+      )
+    }
+  }
+
+  private async sendMailWhenPremiumProductIsDeleted(
+    product: Product
+  ): Promise<void> {
+    if (product.ownerRole === UserRoles.PREMIUM) {
+      await sendProductDeletedEmail(
+        product.userEmail ?? 'null',
+        product.title,
+        product.code
       )
     }
   }

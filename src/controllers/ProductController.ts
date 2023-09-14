@@ -1,8 +1,10 @@
 import type { Request, Response } from 'express'
 import config from '../config/Config'
 import ProductService from '../services/ProductService'
-import { getUserRole, createResponse } from '../utils/Utils'
+import { getUserRoleAndMail, createResponse } from '../utils/Utils'
 import type { CustomProductRequest } from '../middlewares/validators/ProductMw'
+import { logger } from '../utils/Logger'
+import type { Product } from '../entities/IProduct'
 
 const productService = ProductService.getInstance()
 
@@ -42,23 +44,39 @@ export default class ProductController {
   }
 
   async addProduct(req: Request, res: Response): Promise<any> {
-    const data = req.body
-    data.owner = getUserRole(req)
+    const data: Product = req.body
+    const productOwnerInfo = getUserRoleAndMail(req.user)
+    data.ownerRole = productOwnerInfo.ownerRole
+    data.userEmail = productOwnerInfo.userEmail
+    logger.debug(
+      `user ${data.userEmail} with role ${data.ownerRole} is creating product ${data.title}`
+    )
     createResponse(res, 201, await productService.addProduct(data))
   }
 
   async updateProductById(req: Request, res: Response): Promise<any> {
-    const userRole = getUserRole(req) ?? 'null'
+    const productOwnerInfo = getUserRoleAndMail(req.user)
+    const ownerRole = productOwnerInfo.ownerRole ?? 'null'
     createResponse(
       res,
       200,
-      await productService.updateProductById(req.params.pid, req.body, userRole)
+      await productService.updateProductById(
+        req.params.pid,
+        req.body,
+        ownerRole
+      )
     )
   }
 
   async deleteProductById(req: Request, res: Response): Promise<any> {
-    const userRole = getUserRole(req) ?? 'null'
-    await productService.deleteProductById(req.params.pid, userRole)
+    const productOwnerInfo = getUserRoleAndMail(req.user)
+    logger.info(
+      `User: ${JSON.stringify(productOwnerInfo)} is trying to delete product ${
+        req.params.pid
+      }`
+    )
+    const ownerRole = productOwnerInfo.ownerRole ?? 'null'
+    await productService.deleteProductById(req.params.pid, ownerRole)
     createResponse(
       res,
       200,
@@ -67,8 +85,9 @@ export default class ProductController {
   }
 
   async deleteAll(req: Request, res: Response): Promise<any> {
-    const userRole = getUserRole(req) ?? 'null'
-    await productService.deleteAll(userRole)
+    const productOwnerInfo = getUserRoleAndMail(req.user)
+    const ownerRole = productOwnerInfo.ownerRole ?? 'null'
+    await productService.deleteAll(ownerRole)
     createResponse(res, 200, 'All products have been deleted')
   }
 }

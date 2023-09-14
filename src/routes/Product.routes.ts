@@ -37,7 +37,7 @@ productsRoute
   )
   .delete(
     '/products/',
-    validateUserRole([UserRoles.ADMIN, UserRoles.PREMIUM]),
+    validateUserRole([UserRoles.ADMIN]),
     asyncHandler(productController.deleteAll)
   )
 

@@ -7,6 +7,9 @@ export interface Product {
   status?: boolean
   stock: number
   category: string
-  owner?: string
+  ownerRole?: string
+  userEmail?: string
   thumbnails: string[]
 }
+
+export type ProductOwnerInfo = Pick<Product, 'ownerRole' | 'userEmail'>

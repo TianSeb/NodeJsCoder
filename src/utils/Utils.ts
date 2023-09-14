@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt'
+import createHttpError from 'http-errors'
 import { logger } from './Logger'
-import type { User, UserRoles } from '../entities/IUser'
+import type { ProductOwnerInfo } from '../entities/IProduct'
 
 export const createHash = (password: string): string => {
   return bcrypt.hashSync(password, bcrypt.genSaltSync(10))
@@ -18,13 +19,15 @@ export const createResponse = (
   return res.status(statusCode).json({ data })
 }
 
-export const getUserRole = (req: any): UserRoles | undefined => {
-  if (req.user !== null) {
-    const user: Partial<User> = req.user
-    const userRole: UserRoles | undefined = user.role
-    return userRole
+export const getUserRoleAndMail = (user: any): ProductOwnerInfo => {
+  if (user === null) {
+    throw new createHttpError.BadRequest('You must be logged in')
   }
-  return undefined
+
+  return {
+    ownerRole: user.role,
+    userEmail: user.email
+  }
 }
 
 export const handleTryCatchError = (legend: string, error: unknown): void => {

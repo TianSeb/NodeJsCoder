@@ -38,7 +38,7 @@ export async function sendOrderEmail(
 
     const mailOptions = {
       from: process.env.EMAIL,
-      to: process.env.EMAIL,
+      to: userEmail,
       subject: 'Purchase Order',
       html
     }
@@ -62,7 +62,7 @@ export async function sendResetPassword(
 
     const mailOptions = {
       from: process.env.EMAIL,
-      to: process.env.EMAIL,
+      to: userEmail,
       subject: 'Password Reset',
       html
     }
@@ -76,7 +76,7 @@ export async function sendResetPassword(
 export async function sendDeletedEmail(userEmails: string[]): Promise<void> {
   try {
     const templateFile = readFileSync(
-      path.join(__dirname, 'email_deleted.ejs'),
+      path.join(__dirname, 'user_deleted.ejs'),
       'utf-8'
     )
 
@@ -97,5 +97,30 @@ export async function sendDeletedEmail(userEmails: string[]): Promise<void> {
     )
   } catch (error) {
     handleTryCatchError('Error sending delete email', error)
+  }
+}
+
+export async function sendProductDeletedEmail(
+  userEmail: string,
+  productName: string,
+  productCode: string
+): Promise<void> {
+  try {
+    const templateFile = readFileSync(
+      path.join(__dirname, 'product_deleted.ejs'),
+      'utf-8'
+    )
+    const html = ejs.render(templateFile, { productName, productCode })
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: userEmail,
+      subject: 'Premium Product Deleted',
+      html
+    }
+    await transporter.sendMail(mailOptions)
+    logger.info(`Email Sent: ${userEmail}`)
+  } catch (error) {
+    handleTryCatchError('Error sending premium product deleted email', error)
   }
 }
