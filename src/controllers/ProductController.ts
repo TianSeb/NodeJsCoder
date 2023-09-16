@@ -45,18 +45,17 @@ export default class ProductController {
 
   async addProduct(req: Request, res: Response): Promise<any> {
     const data: Product = req.body
-    const productOwnerInfo = getUserRoleAndMail(req.user)
-    data.ownerRole = productOwnerInfo.ownerRole
-    data.userEmail = productOwnerInfo.userEmail
+    const { ownerRole, userEmail } = getUserRoleAndMail(req.user)
+    data.ownerRole = ownerRole
+    data.userEmail = userEmail
     logger.debug(
-      `user ${data.userEmail} with role ${data.ownerRole} is creating product ${data.title}`
+      `user ${userEmail} with role ${ownerRole} is creating product ${data.title}`
     )
     createResponse(res, 201, await productService.addProduct(data))
   }
 
   async updateProductById(req: Request, res: Response): Promise<any> {
-    const productOwnerInfo = getUserRoleAndMail(req.user)
-    const ownerRole = productOwnerInfo.ownerRole ?? 'null'
+    const { ownerRole } = getUserRoleAndMail(req.user)
     createResponse(
       res,
       200,
@@ -69,13 +68,11 @@ export default class ProductController {
   }
 
   async deleteProductById(req: Request, res: Response): Promise<any> {
-    const productOwnerInfo = getUserRoleAndMail(req.user)
+    const { ownerRole, userEmail } = getUserRoleAndMail(req.user)
     logger.info(
-      `User: ${JSON.stringify(productOwnerInfo)} is trying to delete product ${
-        req.params.pid
-      }`
+      `User: ${userEmail} with role: ${ownerRole} is trying to delete product ${req.params.pid}`
     )
-    const ownerRole = productOwnerInfo.ownerRole ?? 'null'
+
     await productService.deleteProductById(req.params.pid, ownerRole)
     createResponse(
       res,
@@ -85,8 +82,7 @@ export default class ProductController {
   }
 
   async deleteAll(req: Request, res: Response): Promise<any> {
-    const productOwnerInfo = getUserRoleAndMail(req.user)
-    const ownerRole = productOwnerInfo.ownerRole ?? 'null'
+    const { ownerRole } = getUserRoleAndMail(req.user)
     await productService.deleteAll(ownerRole)
     createResponse(res, 200, 'All products have been deleted')
   }

@@ -106,6 +106,11 @@ export async function sendProductDeletedEmail(
   productCode: string
 ): Promise<void> {
   try {
+    if (process.env.NODE_ENV === 'testing') {
+      console.log('Testing sending product deleted email')
+      return
+    }
+
     const templateFile = readFileSync(
       path.join(__dirname, 'product_deleted.ejs'),
       'utf-8'

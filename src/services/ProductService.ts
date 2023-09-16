@@ -66,6 +66,9 @@ export default class ProductService {
   async deleteProductById(id: any, userRole: string): Promise<void> {
     const product = await this.getProductById(id)
     this.validateUserRole(userRole, product)
+    logger.info(
+      `Deleting product: ${product._id} ,with ownerRole: ${product.ownerRole}`
+    )
     const deleted = await this.productManager.deleteProductById(id)
     await this.sendMailWhenPremiumProductIsDeleted(product)
     if (deleted === 1) {
@@ -123,7 +126,7 @@ export default class ProductService {
   ): Promise<void> {
     if (product.ownerRole === UserRoles.PREMIUM) {
       await sendProductDeletedEmail(
-        product.userEmail ?? 'null',
+        product.userEmail,
         product.title,
         product.code
       )

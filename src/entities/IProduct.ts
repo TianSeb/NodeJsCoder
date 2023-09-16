@@ -7,8 +7,8 @@ export interface Product {
   status?: boolean
   stock: number
   category: string
-  ownerRole?: string
-  userEmail?: string
+  ownerRole: string
+  userEmail: string
   thumbnails: string[]
 }
 
