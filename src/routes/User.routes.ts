@@ -22,6 +22,11 @@ usersRoute
     asyncHandler(userController.refreshToken)
   )
   .post(
+    '/refresh-token',
+    requireRefreshToken,
+    asyncHandler(userController.refreshToken)
+  )
+  .post(
     '/reset-password/',
     passport.authenticate('jwt'),
     isAuthenticated,

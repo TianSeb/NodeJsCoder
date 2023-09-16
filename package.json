@@ -5,7 +5,7 @@
   "main": "App.ts",
   "scripts": {
     "dev": "cross-env NODE_ENV=development ts-node-dev --respawn src/App.ts",
-    "start": "npm run build && cross-env NODE_ENV=production node dist/App.js",
+    "start": "cross-env NODE_ENV=production node ./dist/App.js",
     "build": "tsc",
     "test": "cross-env NODE_ENV=testing jest --verbose --runInBand --no-cache --detectOpenHandles --forceExit --testTimeout=5000",
     "test:unit": "cross-env NODE_ENV=testing jest --verbose --runInBand --no-cache --detectOpenHandles --forceExit --testTimeout=5000 test/unit",

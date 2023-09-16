@@ -30,6 +30,8 @@ export default class UserController {
   }
 
   async logout(req: Request, res: Response): Promise<any> {
+    res.clearCookie('refreshToken')
+    res.clearCookie('AUTH_TOKEN')
     req.session.destroy((err: any) => {
       if (err !== null) {
         logger.error(`Error destroying session ${err}`)
