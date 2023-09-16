@@ -25,4 +25,16 @@ components:
           msg: Login OK
           accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI....
           refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI....
+      RefreshToken:
+        type: object
+        properties: 
+          msg:
+            type: string
+            description: Request Message
+          refreshToken:
+            type: string
+            description: User Token
+        example:
+          status: Refresh OK
+          refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI....
           

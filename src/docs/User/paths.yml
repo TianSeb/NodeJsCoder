@@ -35,3 +35,21 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schema/Users/User'
+  /users/refresh-token:
+    post:
+      tags: 
+      - Users
+      summary: Refresh Access Token
+      requestBody:  
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/parameters/schemas/refreshToken'
+        required: true
+      responses:  
+        200:
+          description: Login success
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schema/Users/refreshToken'
