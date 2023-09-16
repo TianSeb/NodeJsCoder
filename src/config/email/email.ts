@@ -38,14 +38,14 @@ export async function sendOrderEmail(
 
     const mailOptions = {
       from: process.env.EMAIL,
-      to: process.env.EMAIL,
+      to: userEmail,
       subject: 'Purchase Order',
       html
     }
     await transporter.sendMail(mailOptions)
     logger.info(`Mail Sent to: ${userEmail}`)
   } catch (error) {
-    handleTryCatchError('Error sending email', error)
+    handleTryCatchError('Error sending purchase email', error)
   }
 }
 
@@ -62,13 +62,70 @@ export async function sendResetPassword(
 
     const mailOptions = {
       from: process.env.EMAIL,
-      to: process.env.EMAIL,
+      to: userEmail,
       subject: 'Password Reset',
       html
     }
     await transporter.sendMail(mailOptions)
     logger.info(`Email Sent: ${userEmail}`)
   } catch (error) {
-    handleTryCatchError('Error sending email', error)
+    handleTryCatchError('Error sending reset email', error)
+  }
+}
+
+export async function sendDeletedEmail(userEmails: string[]): Promise<void> {
+  try {
+    const templateFile = readFileSync(
+      path.join(__dirname, 'user_deleted.ejs'),
+      'utf-8'
+    )
+
+    await Promise.all(
+      userEmails.map(async (userEmail) => {
+        const html = ejs.render(templateFile, { userEmail })
+
+        const mailOptions = {
+          from: process.env.EMAIL,
+          to: userEmail,
+          subject: 'Email Deleted',
+          html
+        }
+
+        await transporter.sendMail(mailOptions)
+        logger.info(`Email Deleted: ${userEmail}`)
+      })
+    )
+  } catch (error) {
+    handleTryCatchError('Error sending delete email', error)
+  }
+}
+
+export async function sendProductDeletedEmail(
+  userEmail: string,
+  productName: string,
+  productCode: string
+): Promise<void> {
+  try {
+    if (process.env.NODE_ENV === 'testing') {
+      console.log('Testing sending product deleted email')
+      return
+    }
+
+    const templateFile = readFileSync(
+      path.join(__dirname, 'product_deleted.ejs'),
+      'utf-8'
+    )
+    const html = ejs.render(templateFile, { productName, productCode })
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: userEmail,
+      subject: 'Premium Product Deleted',
+      html
+    }
+    await transporter.sendMail(mailOptions)
+    logger.info(`Email Sent: ${userEmail}`)
+  } catch (error) {
+    handleTryCatchError('Error sending premium product deleted email', error)
   }
 }

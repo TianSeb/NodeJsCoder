@@ -5,7 +5,8 @@ import type { User } from '../entities/IUser'
 import { createHash, isValidPassword } from '../utils/Utils'
 import { logger } from '../utils/Logger'
 import { UserRoles } from '../entities/IUser'
-import { UserModel } from '../persistence/mongo/models/User'
+import type UserResponseDTO from '../persistence/mongo/dtos/user/User.Response'
+import { sendDeletedEmail } from '../config/email/email'
 
 export default class UserService {
   private static instance: UserService | null = null
@@ -48,8 +49,8 @@ export default class UserService {
 
     const checkPassword = isValidPassword(password, userFound)
     if (!checkPassword) throw new createError.Forbidden(`Wrong password`)
-
-    logger.debug(`login user ${userFound.email}`)
+    logger.debug(`login User: ${userFound.email}`)
+    await this.userManager.updateLastConnection(email)
 
     return userFound
   }
@@ -62,13 +63,17 @@ export default class UserService {
     return userFound
   }
 
-  async changeUserRole(userId: string): Promise<void> {
-    const userRole = await this.getUserRole(userId)
+  async getUsers(): Promise<UserResponseDTO[]> {
+    return await this.userRepository.getUsers()
+  }
+
+  async changeUserRole(userEmail: string): Promise<void> {
+    const userRole = await this.getUserRole(userEmail)
     const updatedRole =
       userRole === UserRoles.PREMIUM ? UserRoles.USER : UserRoles.PREMIUM
     logger.debug(`changing role: ${userRole} to: ${updatedRole}`)
 
-    await this.userManager.updateUserRole(userId, updatedRole)
+    await this.userManager.updateUserRole(userEmail, updatedRole)
   }
 
   async updatePassword(email: string, password: string): Promise<void> {
@@ -82,10 +87,17 @@ export default class UserService {
     await this.userManager.updateUserPassword(email, newPass)
   }
 
-  private async getUserRole(userId: string): Promise<any> {
+  async deleteUsers(): Promise<string> {
+    const deletedEmails = await this.userManager.deleteUsers()
+    await sendDeletedEmail(deletedEmails)
+
+    return deletedEmails.length.toString()
+  }
+
+  private async getUserRole(userEmail: string): Promise<any> {
     const allowedRoles = [UserRoles.PREMIUM, UserRoles.USER]
 
-    const user = await UserModel.findById(userId)
+    const user = await this.findUserWithFilter({ email: userEmail })
     if (user === null || user === undefined)
       throw new createError.NotFound(`User Not Found`)
 
@@ -97,12 +109,5 @@ export default class UserService {
       throw new createError.Forbidden(`Wrong username or password`)
     }
     return userRole
-  }
-
-  async refreshToken(userId: string): Promise<void> {
-    const userFound = await this.userManager.findUser({ _id: userId })
-    if (userFound === null || userFound === undefined)
-      throw new createError.Forbidden(`Wrong username or password`)
-    // await this.signTokenService.generateToken
   }
 }

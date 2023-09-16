@@ -14,7 +14,7 @@ export default abstract class MongoDao<T> {
 
   async findById(id: any): Promise<T | null> {
     const item = await this.model.findById(id)
-    return item.toObject() ?? null
+    return item ?? null
   }
 
   async findAll(): Promise<T[]> {

@@ -4,6 +4,7 @@ import SignTokenService from '../services/SignTokenService'
 import { sendResetPassword } from '../config/email/email'
 import { createResponse } from '../utils/Utils'
 import { logger } from '../utils/Logger'
+import UserResponseDTO from '../persistence/mongo/dtos/user/User.Response'
 
 const userService = UserService.getInstance()
 const signTokenService = SignTokenService.getInstance()
@@ -52,21 +53,19 @@ export default class UserController {
     createResponse(res, 200, { status: 'Refresh Ok', accessToken })
   }
 
-  async createSession(req: Request, res: Response): Promise<any> {
+  async getCurrentUser(req: Request, res: Response): Promise<any> {
     if (req.user !== null && req.user !== undefined) {
-      createResponse(res, 201, { session: req.user })
+      const userDto = new UserResponseDTO(req.user)
+      createResponse(res, 201, userDto)
     }
   }
 
-  async privateJwt(req: Request, res: Response): Promise<any> {
-    createResponse(res, 200, {
-      status: 'OK',
-      user: req.user
-    })
+  async getUsers(req: Request, res: Response): Promise<any> {
+    createResponse(res, 201, await userService.getUsers())
   }
 
   async changeUserRole(req: Request, res: Response): Promise<any> {
-    await userService.changeUserRole(req.params.uid)
+    await userService.changeUserRole(req.params.email)
     createResponse(res, 200, 'User role changed')
   }
 
@@ -99,5 +98,10 @@ export default class UserController {
     await userService.updatePassword(user.email, password)
     res.clearCookie(RESET_TOKEN)
     createResponse(res, 201, { msg: 'Password updated' })
+  }
+
+  async deleteUsers(req: Request, res: Response): Promise<any> {
+    const deletedCount = await userService.deleteUsers()
+    createResponse(res, 200, `${deletedCount} users deleted`)
   }
 }

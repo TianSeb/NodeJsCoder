@@ -105,7 +105,7 @@ export default class CartService {
     }
 
     const isNotAuthorized =
-      userRole === UserRoles.PREMIUM && product.owner === UserRoles.PREMIUM
+      userRole === UserRoles.PREMIUM && product.ownerRole === UserRoles.PREMIUM
     if (isNotAuthorized) {
       throw new createError.NotFound(
         `User not authorized to perform this action`

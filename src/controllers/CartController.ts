@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express'
 import CartService from '../services/CartService'
-import { getUserRole, createResponse } from '../utils/Utils'
+import { getUserRoleAndMail, createResponse } from '../utils/Utils'
 import UserResponseDTO from '../persistence/mongo/dtos/user/User.Response'
 
 const cartService = CartService.getInstance()
@@ -35,7 +35,8 @@ export default class CartController {
     res: Response,
     next: NextFunction
   ): Promise<any> {
-    const userRole = getUserRole(req) ?? 'null'
+    const productOwnerInfo = getUserRoleAndMail(req)
+    const ownerRole = productOwnerInfo?.ownerRole ?? 'null'
     createResponse(
       res,
       200,
@@ -43,7 +44,7 @@ export default class CartController {
         req.params.cid,
         req.params.pid,
         req.body,
-        userRole
+        ownerRole
       )
     )
   }
@@ -61,11 +62,12 @@ export default class CartController {
     res: Response,
     next: NextFunction
   ): Promise<any> {
-    const userRole = getUserRole(req) ?? 'null'
+    const productOwnerInfo = getUserRoleAndMail(req)
+    const ownerRole = productOwnerInfo?.ownerRole ?? 'null'
     await cartService.saveProductToCart(
       req.params.cid,
       req.params.pid,
-      userRole
+      ownerRole
     )
     createResponse(res, 201, 'Product saved successfully')
   }

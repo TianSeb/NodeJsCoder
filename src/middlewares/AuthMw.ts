@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-confusing-void-expression */
 import type { Request, Response, NextFunction } from 'express'
 import { logger } from '../utils/Logger'
-import type { User } from '../entities/IUser'
-import { UserRoles } from '../entities/IUser'
+import type { UserRoles } from '../entities/IUser'
 import createError from 'http-errors'
 
 export const isAuthenticated = (
@@ -34,23 +33,19 @@ export const requireRefreshToken = (
   next()
 }
 
-export const validateUserRole = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
-  logger.debug('validating user role')
-  if (req.user !== null && req.user !== undefined) {
-    const userRole: Partial<User> = req.user
-    logger.debug(`User Role is: ${userRole.role}`)
+export const validateUserRole =
+  (allowedRoles: UserRoles[]) =>
+  (req: any, res: Response, next: NextFunction): void => {
+    logger.debug('validating user role')
+    const userRole: UserRoles | undefined = req.user?.role
+    if (userRole !== undefined) {
+      logger.debug(`User Role is: ${userRole}`)
 
-    if (
-      userRole.role === UserRoles.ADMIN ||
-      userRole.role === UserRoles.PREMIUM
-    ) {
-      return next()
+      if (allowedRoles.includes(userRole)) {
+        logger.debug('UserRole Authorized')
+        return next()
+      }
+      logger.debug('Failed to validate user Role in mw')
     }
-    logger.debug('Failed to validate user Role in mw')
+    return next(createError(403, 'User Role Not Authorized'))
   }
-  return next(createError(403, 'User Role Not Authorized'))
-}

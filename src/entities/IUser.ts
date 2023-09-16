@@ -8,6 +8,7 @@ export interface User {
   age: number
   role?: UserRoles
   cart?: Types.ObjectId | string
+  lastConnection?: Date
 }
 
 export enum UserRoles {

@@ -1,6 +1,33 @@
 components:
   parameters:
     schemas:
+      register: 
+        type: object
+        required:
+          - firstName
+          - lastName
+          - email
+          - password
+        properties:
+          firstName:
+            type: string
+          lastName:
+            type: string
+          email:
+            type: string
+            description: User email
+          password:
+            type: string
+            description: User password
+          age:
+            type: integer
+            description: User age (optional)
+        example:
+          firstName: Tyrion
+          lastName: Lannister
+          email: tyrion@mail.com
+          password: abc123def456
+          age: 47
       login: 
         type: object
         required:   

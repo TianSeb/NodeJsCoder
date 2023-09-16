@@ -1,4 +1,22 @@
 paths:
+  /users/register:
+    post:
+      tags: 
+      - Users
+      summary: User Register
+      requestBody:  
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/parameters/schemas/register'
+        required: true
+      responses:  
+        200:
+          description: Login success
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schema/Users/UserCreated'
   /users/login:
     post:
       tags: 

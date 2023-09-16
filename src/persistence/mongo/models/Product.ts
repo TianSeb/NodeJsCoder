@@ -25,7 +25,8 @@ export const ProductSchema: Schema = new Schema<Product>(
     status: { type: Boolean, required: true, default: true },
     stock: { type: Number, required: true },
     category: { type: String, required: true },
-    owner: { type: String, default: UserRoles.ADMIN },
+    ownerRole: { type: String, default: UserRoles.ADMIN },
+    userEmail: { type: String, default: UserRoles.ADMIN },
     thumbnails: { type: [String], required: false }
   },
   {

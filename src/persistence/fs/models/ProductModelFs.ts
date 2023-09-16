@@ -1,4 +1,5 @@
 import type { Product } from '../../../entities/IProduct'
+import { UserRoles } from '../../../entities/IUser'
 
 export default class ProductModelFs implements Product {
   id?: string
@@ -10,6 +11,8 @@ export default class ProductModelFs implements Product {
   stock: number
   category: string
   thumbnails: string[]
+  ownerRole: string
+  userEmail: string
 
   constructor(data: Product) {
     this.title = data.title
@@ -20,5 +23,7 @@ export default class ProductModelFs implements Product {
     this.stock = data.stock
     this.category = data.category
     this.thumbnails = data.thumbnails
+    this.ownerRole = data.ownerRole ?? UserRoles.USER
+    this.userEmail = data.userEmail ?? 'user@example.com'
   }
 }

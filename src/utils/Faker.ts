@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import type { Product } from '../entities/IProduct'
 import { Fruits, Vegetables, Cheese } from './Payload'
+import { UserRoles } from '../entities/IUser'
 
 export function generateRandomProducts(
   enumType: string,
@@ -40,7 +41,9 @@ function createRandomProduct(enumType: string): Product {
     status: true,
     stock: getRandomNumber(50),
     category: enumType,
-    thumbnails: [faker.image.url()]
+    thumbnails: [faker.image.url()],
+    ownerRole: UserRoles.ADMIN,
+    userEmail: 'ADMIN@ADMIN.COM'
   }
   return product
 }

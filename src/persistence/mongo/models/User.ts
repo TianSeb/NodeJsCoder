@@ -16,7 +16,8 @@ const userSchema: Schema = new Schema<User>(
     password: { type: String, required: true },
     age: { type: Number },
     role: { type: String, default: UserRoles.USER },
-    cart: { type: Schema.Types.ObjectId, ref: 'Cart', required: false }
+    cart: { type: Schema.Types.ObjectId, ref: 'Cart', required: false },
+    lastConnection: { type: Date, required: false, index: true }
   },
   {
     versionKey: false
