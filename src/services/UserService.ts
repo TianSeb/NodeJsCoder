@@ -36,7 +36,8 @@ export default class UserService {
     return await this.userManager.createUser({
       ...user,
       password: createHash(password),
-      role: UserRoles.USER
+      role: UserRoles.USER,
+      lastConnection: new Date()
     })
   }
 

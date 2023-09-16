@@ -62,11 +62,15 @@ export default class UserManagerMongo implements UserDao {
       lastConnection: { $lt: dateLimit }
     })
 
+    const nonAdminUsersToDelete = usersToDelete.filter(
+      (user) => user.role !== 'admin'
+    )
+
     await UserModel.deleteMany({
-      lastConnection: { $lt: dateLimit }
+      _id: { $in: nonAdminUsersToDelete.map((user) => user._id) }
     })
 
-    const deletedEmails = usersToDelete.map((user) => user.email)
+    const deletedEmails = nonAdminUsersToDelete.map((user) => user.email)
 
     return deletedEmails
   }

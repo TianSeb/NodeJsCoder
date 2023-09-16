@@ -43,3 +43,13 @@ components:
         example:
           email: tyrion@mail.com
           password: abc123def456
+      refreshToken: 
+        type: object
+        required:   
+          - refreshToken
+        properties:  
+          refreshToken:
+            type: string
+            description: Refresh Token
+        example:
+          refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI....

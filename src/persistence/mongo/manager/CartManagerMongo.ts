@@ -154,14 +154,18 @@ export default class CartManagerMongo
 
       logger.debug(`starting purchase order for cart: ${cartId}`)
 
+      // prepare mongo statements for updating database
       const { updateOperations, productsForEmail, totalPrice } =
         this.calculatePurchaseOrder(cart)
 
       const result = await ProductModel.bulkWrite(updateOperations, { session })
+
+      // validates stock checking if all the products were modified
       if (result.modifiedCount !== cart.products.length) {
         throw createError.NotAcceptable('Out of Stock')
       }
 
+      // Empties cart
       cart.products = []
       await cart.save({ session })
 
