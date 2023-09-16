@@ -3,14 +3,14 @@
 
 - E-commerce project in NodeJs
 
-## Deploy https://vinilus-store.vercel.app/
+## Deploy https://nodejscoder-1zby-dev.fl0.io/
 
-- Deploy App in vercel.com, from my github.
+- Deploy App in fl0.com, from my github.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 # Getting Started
 
-In the project directory, you can run:
+If you want to run the project locally, go to project root directory, and then run:
 
 ### `npm install`
 
