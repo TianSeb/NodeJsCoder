@@ -49,13 +49,14 @@ usersRoute
     '/users',
     passport.authenticate('jwt'),
     isAuthenticated,
+    validateUserRole([UserRoles.ADMIN]),
     asyncHandler(userController.getUsers)
   )
   .delete(
     '/users',
     passport.authenticate('jwt'),
     isAuthenticated,
-    validateUserRole([UserRoles.ADMIN, UserRoles.PREMIUM]),
+    validateUserRole([UserRoles.ADMIN]),
     asyncHandler(userController.deleteUsers)
   )
 
