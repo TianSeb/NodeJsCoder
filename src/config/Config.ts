@@ -1,11 +1,5 @@
 import dotenv from 'dotenv'
-import path from 'path'
-
-const rootPath = process.cwd()
-
-dotenv.config({
-  path: path.resolve(rootPath, `./.env.${process.env.NODE_ENV}`)
-})
+dotenv.config()
 
 const config = {
   environment: process.env.NODE_ENV,

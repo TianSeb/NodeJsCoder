@@ -120,7 +120,7 @@ describe('Get Products Route', () => {
       info: {
         page: 1,
         totalPages: 3,
-        nextPage: 'http://localhost:8001/products?page=2',
+        nextPage: 'http://localhost:8080/products?page=2',
         prevPage: null,
         hasNextPage: true,
         hasPrevPage: false
