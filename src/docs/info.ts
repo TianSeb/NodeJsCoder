@@ -8,7 +8,7 @@ const info = {
       version: '1.0.0',
       description: 'Tecnologías utilizadas: Node, Express, MongoDB'
     },
-    servers: [{ url: 'http://localhost:8001' }]
+    servers: [{ url: 'https://eccomerce-salasia.onrender.com' }]
   },
   apis: [
     './src/docs/User/*.yml',

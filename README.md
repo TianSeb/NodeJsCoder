@@ -3,9 +3,9 @@
 
 - E-commerce project in NodeJs
 
-## Deploy https://nodejscoder-1zby-dev.fl0.io/
+## Deploy https://eccomerce-salasia.onrender.com
 
-- Deploy App in fl0.com, from my github.
+- Deploy App in render.com, from my github.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 # Getting Started
