@@ -1,17 +1,17 @@
 FROM node:18-alpine
 
-WORKDIR /app
+WORKDIR /
 
-COPY package.json ./
+COPY package*.json ./
 
 RUN npm install
 
-COPY . .
+COPY src ./src
+COPY tsconfig.json .
+COPY .env.production .
+
+RUN npm run build
 
 EXPOSE 8080
-
-ARG ENV_LOCAL
-
-ENV ENV_LOCAL=${ENV_LOCAL}
 
 CMD ["npm", "start"]

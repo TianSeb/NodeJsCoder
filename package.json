@@ -2,11 +2,11 @@
   "name": "eccomerce-platform",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/App.js",
+  "main": "dist/App.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development ts-node-dev --respawn src/App.ts",
-    "start": "cross-env NODE_ENV=production node ./dist/App.js",
-    "build": "tsc && mv ./dist/* ./app/ && rm -r ./dist",
+    "start": "cross-env NODE_ENV=production node dist/App.js",
+    "build": "tsc",
     "test": "cross-env NODE_ENV=testing jest --verbose --runInBand --no-cache --detectOpenHandles --forceExit --testTimeout=5000",
     "test:unit": "cross-env NODE_ENV=testing jest --verbose --runInBand --no-cache --detectOpenHandles --forceExit --testTimeout=5000 test/unit",
     "test:integration": "cross-env NODE_ENV=testing jest --verbose --runInBand --no-cache --detectOpenHandles --forceExit --testTimeout=5000 test/integration"
